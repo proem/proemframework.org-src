@@ -1,13 +1,29 @@
-.navbar .nav {
+.topnav .navbar .nav {
   float: right;
 }
 
-.hero-unit {
-  padding: 12px 0 0;
-  margin-top: 40px;
+.proem-tree {
+  padding: 0;
+  margin: 40px 0 18px;
   border-radius: 0;
   border-top: 3px solid #E1E1E1;
   border-bottom: 1px solid #CCC;
+}
+
+.proem-tree .hero-unit {
+  padding: 12px 0 0;
+  margin-bottom: 0;
+}
+
+.features p {
+  margin: 4px 0;
+  color: #919191;
+  line-height: 1em;
+  text-align: justify;
+}
+
+.features h3 {
+  color: #55B8D5;
 }
 
 .downloads {
