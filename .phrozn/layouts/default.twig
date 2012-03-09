@@ -10,14 +10,23 @@
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
 
-        <link rel="stylesheet" type="text/css" href="styles/bootstrap.css">
-        <link rel="stylesheet" type="text/css" href="styles/default.css">
+        <link rel="stylesheet" type="text/css" href="styles/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="styles/proem.css">
     </head>
     <body>
         {% include 'layouts/header.twig' %}
+        <div class="hero-unit">
+          <div class="container">
+            <img src="media/img/tree-banner.png" width="960" />
+            <div class="downloads">
+              <a href="downloads/proem.phar" class="btn btn-large btn-success">Download Phar</a>
+              <a href="https://github.com/proem/proem" class="btn btn-large btn-info" target="_blank">Fork Proem!</a>
+            </div>
+          </div>
+        </div>
         <div class="container">
-            {{ content }}
-            {% include 'layouts/footer.twig' %}
+          {{ content }}
+          {% include 'layouts/footer.twig' %}
         </div>
     </body>
 </html>
