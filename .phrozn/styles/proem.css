@@ -1,3 +1,7 @@
+html, body {
+  height: 100%;
+}
+
 .topnav .navbar .nav {
   float: right;
 }
@@ -12,6 +16,9 @@
   border-radius: 0;
   border-top: 3px solid #E1E1E1;
   border-bottom: 1px solid #CCC;
+}
+
+.proem-tree .hero-unit {
   background-image: url(/media/img/banner-bg.png);
 }
 
@@ -34,4 +41,15 @@
 .downloads {
   text-align: center;
   margin: 20px auto;
+}
+
+.docs.container > .row {
+  margin-top: 30px;
+}
+
+pre.prettyprint {
+  margin: 16px 0;
+  padding: 18px 6px 0 6px;
+  background-color: #F8F8FF;
+  border: 1px solid #e1e1e1;
 }

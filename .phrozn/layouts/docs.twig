@@ -1,0 +1,20 @@
+    {% include 'layouts/header.twig' %}
+    <div class="docs container">
+      <div class="row">
+        <div class="span3">
+          <ul class="nav nav-tabs nav-stacked">
+            <li><a href="/docs">Overview</a></li>
+            <li><a href="/docs/autoloader.html">The Autoloader</a></li>
+            <li><a href="/docs/cascading-namespace.html">The Cascading Namespace</a></li>
+            <li><a href="/docs/opt-component.html">The Opt Component</a></li>
+            <li><a href="/docs/route-component.html">Routing</a></li>
+            <li><a href="/docs/signal-component.html">Signals</a></li>
+            <li><a href="/docs/services-component.html">Dependency Injection</a></li>
+          </ul>
+        </div>
+        <div class="span9">
+          {{ content }}
+        </div>
+      </div>
+    </div>
+    {% include 'layouts/footer.twig' %}
