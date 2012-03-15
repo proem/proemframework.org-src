@@ -2,12 +2,17 @@
   float: right;
 }
 
+@media (min-width: 980px) {
+  body { margin-top: 40px; }
+}
+
 .proem-tree {
   padding: 0;
-  margin: 40px 0 18px;
+  margin-bottom: 18px;
   border-radius: 0;
   border-top: 3px solid #E1E1E1;
   border-bottom: 1px solid #CCC;
+  background-image: url(/media/img/banner-bg.png);
 }
 
 .proem-tree .hero-unit {
@@ -18,7 +23,7 @@
 .features p {
   margin: 4px 0;
   color: #919191;
-  line-height: 1em;
+  line-height: 1.2em;
   text-align: justify;
 }
 
