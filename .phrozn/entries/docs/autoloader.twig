@@ -1,0 +1,62 @@
+layout: docs.twig
+---
+<div class="well">
+  <h2>The Autoloader</h2>
+  <p>The autoloader is a simple class loader which adheres to the recently accepted PSR-0 standard (see <a href="http://groups.google.com/group/php-standards">here</a> and <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md">here</a>).</p>
+  <p>Whenever you attempt to use a class which has not yet been included php will trigger a mechanism which looks for a registered autoloader. This autoloader can then be used to search the filesystem for the file required to load the class.</p>
+  <p>Proem's Autoloader is simple to use and enables lazy loading of both the Proem libraries as well as any third party code complying with the PSR-0 standard.</p>
+  <p>The following example illustrates all the code you need within your bootstrap to be able to use Proem.</p>
+</div>
+<div class="well">
+  <h3>A simple example</h3>
+  <pre class="prettyprint">
+require_once './lib/Proem/Autoloader.php';
+
+use Proem\Autoloader;
+
+(new AutoLoader)
+  ->registerNamespace('Proem', './lib')
+  ->register();
+  </pre>
+  <blockquote>Note that you first must manually include the Autoloader.php file itself. Once this is done, you will no longer need any calls to include or require within your code</blockquote>
+  <p>This tells the autoloader the the <em>Proem</em> namespace can be found within the ./lib directory.</p>
+</div>
+<div class="well">
+  <h3>Multiple locations for a single namespace</h3>
+  <p>You can also register multiple file system paths for a single namespace to reside in:</p>
+  <pre class="prettyprint">
+(new AutoLoader)
+    ->registerNamespaces([
+      'Proem' => ['/myproem', 'lib']
+    ]);
+  </pre>
+  <p>Here, the first path registered will be search first. So, if you have a class in <em>/myproem/Proem/Proem.php</em> and code which instantiates <em>Proem\Proem</em> the Proem class will be loaded from <em>/myproem/Proem/Proem.php</em> and not <em>lib/Proem/Proem.php</em></p>
+</div>
+<div class="well">
+  <h3>Loading PEAR like classes</h3>
+  <p>Classes implementing the PEAR naming conventions can also be added to the autoloader:</p>
+  <pre class="prettyprint">
+(new AutoLoader())
+    ->registerPearPrefix('Pear_', '/usr/share/php');
+  </pre>
+  <p>This tells the autoloader to find classes beginning with the prefix Pear_ within the /usr/share/php directory. There are similar methods for adding multiple Pear type prefixes and locations as there are within namespaces.</p>
+  <p>You can add as many namespaces & paths as are required prior to calling the register() method. You can also, if need be, register a completely new Autoloader at a latter time.</p>
+  <pre class="prettyprint">
+require_once 'Proem/Autoloader.php';
+
+use Proem\Autoloader;
+
+(new AutoLoader())
+    ->registerNamespace('Proem', './lib')
+    ->register();
+
+// some more code
+
+(new AutoLoader())
+    ->registerNamespace('Foo', './foo')
+    ->register();
+
+// more code using the Foo namespace
+  </pre>
+  <p>For more examples, I suggest checking out the tests <a href="https://github.com/proem/proem/tree/master/tests/lib/Proem/Tests/AutoloaderTest">here</a></p>
+</div>
