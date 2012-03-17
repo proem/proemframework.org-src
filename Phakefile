@@ -2,9 +2,9 @@
 
 desc('Build the site');
 task('build', function($args) {
-    system('phr up . htdocs');
-    system('rm -fr htdocs/downloads');
-    system('cp -r .phrozn/downloads htdocs/');
+    system('phr up . ../stage');
+    system('rm -fr ../stage/downloads');
+    system('cp -r .phrozn/downloads ../stage/');
 });
 
 task('default', 'build');
