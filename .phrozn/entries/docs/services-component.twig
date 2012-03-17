@@ -1,0 +1,268 @@
+layout: docs.twig
+---
+<div class="well">
+  <h2>The services component (dependency injection)</h2>
+  <p>
+    There is a lot of talk in the PHP community these days regarding <a href="http://en.wikipedia.org/wiki/Dependency_injection">dependency injection</a>. To
+    explain it simply, dependency injection provides a means of injecting an objects dependencies into that object at runtime. Without some form of
+    dependency injection you will see classes with there dependencies hard coded. Something like:
+  </p>
+  <pre class="prettyprint">
+    class Foo
+    {
+        private $bar;
+
+        public function __construct()
+        {
+            $this->bar = new Bar;
+        }
+    }
+  </pre>
+  <p>
+    As you can imagine this leads to issues. What if you want to swap Bar for your own implementation? In the above example you would need to hack Foo.
+  </p>
+  <p>
+    A better approach is to use dependency injection. In it's simplest form this is simply achieved by passing dependencies in as they are required.
+  </p>
+  <pre class="prettyprint">
+    class Foo
+    {
+        private $bar;
+
+        public function __construct(Bar $bar)
+        {
+            $this->bar = $bar;
+        }
+    }
+
+    $bar = new MyBar;
+    $foo = new Foo($bar);
+  </pre>
+</div>
+<div class="well">
+  <h3>How Proem addresses these issues</h3>
+  <p>
+    While that is all well and good when your working with a small code base, it can start to get pretty untidy as  your application or framework starts to get larger.
+  </p>
+  <p>
+    Proem gets around this issue in a couple of different ways. The first of which is by implementing a <a href="/docs/cascading-namespace.html">cascading namespace</a>.
+    This allows us to easily override classes and have those new versions picked up and used globally throughout the framework.
+  </p>
+  <p>
+    The second approach used in other areas of the framework uses what is referred to as <strong>Dependency Injection Containers</strong>, and that is what the <em>Service Component</em>
+    is here to provide. Dependency injection containers are simply little objects responsible for configuring and creating other objects. The objects that
+    they produce aren't even aware that they are being created via a container. In Proem, these containers are called <em>Service Assets</em> or more commonly just <em>Assets</em>.
+    <em>Assets</em> themselves are managed by the <em>Service Asset Manager</em>. The <em>Service Asset Manager</em> is simply a <em>Registry</em> designed specifically to hold many containers.
+  </p>
+  <p>
+    In Proem the <em>Service Asset Manager</em> as passed into (injected) many other objects as the frameworks bootstrap execution flow is processed. This then makes <em>Assets</em>
+    available in the places you need them.
+  </p>
+</pre>
+<div class="well">
+  <h3>Why?</h3>
+  <p>
+    Some might ask why we need dependency injection containers at all if we already have a simple method of overriding classes globally? The main motivation for using <em>containers</em>
+    within a <em>Asset Manager</em> instead of simply using an ordinary <em>Registry</em> full of live objects is just that, these are usually <em>live, pre instantiated</em> objects.
+    What if we never use the Foo asset? There's no point in having an instantiated Foo object kicking around if we don't need it. Instead, we have a lightweight <em>Asset</em> (container)
+    that is capable of producing Foo if and when we need it.
+  </p>
+</div>
+<div class="well">
+  <h3>How</h3>
+  <p>
+    So, how is this done? While it might sound like a complicated process, it's actually quite simple. An <em>Asset</em> is a simple class that stores any parameters
+    (including other dependencies) that our object needs so it can be instantiated, as well as provides a means of actually instantiating that object.
+  </p>
+  <p>
+    Storing the parameters is simple, they are just pushed onto an array as key => value pairs. More complex but still easy enough, the creation of our objects
+    is left up to a Closure.
+  </p>
+</div>
+<div class="well">
+  <h3>A simple example</h3>
+  <pre class="prettyprint">
+    class Person
+    {
+        private $name;
+
+        public function __construct($name = null)
+        {
+            $this->name = $name;
+        }
+
+        public function getName()
+        {
+            return $name;
+        }
+    }
+
+    $asset = new \Proem\Service\Asset\Generic;
+    $asset->set('Person', function() {
+        return new Person;
+    });
+
+    $person = $asset->get();
+  </pre>
+  <p>
+    The above example is trivial and doesn't really describe much benefit. Let's throw in some parameters. set() requires a string representing the class that
+    this <em>Asset</em> will provide (including the full name space if need be), followed by a <em>Closure</em> which actually creates the object.
+  </p>
+  <pre class="prettyprint">
+    $asset = new \Proem\Service\Asset\Generic;
+    $asset->setParam('name', 'trq')
+        ->set('Person', function($a) {
+            return new Person;
+        });
+
+    echo $asset->get()->getName(); // 'trq'
+  </pre>
+  <div class="alert alert-info">
+    Note: The first argument to our Closure is the <em>Asset</em> object itself.</blockquote>
+  </div>
+  <p>
+    Still not all that impressive but I'm hoping you are starting to see the benefits. Let's have a look at something more useful. A mail component. Typically
+    a Mail component requires at least two parts. A Transport object used to handle connection to a mail server, and an actual Mail object used to actually
+    build an email. Usage might look something like:
+  </p>
+  <pre class="prettyprint">
+    $transport = new Transport('smtp.foo.com', 'username', 'password'));
+    $mailer = new Mail($transport);
+  </pre>
+  <p>
+    Writing all that code every time we needed to send an email would be a pain. Not to mention the pain we would need to go through if we ever changed mail
+    servers. A smart programmer would write a wrapper around it and then use that wrapper. This is exactly what an <em>Asset</em> is. When used in conjunction
+    with the <em>Service Asset Manager</em> we can also set up any other <em>object</em> dependencies our object might have.
+  </p>
+  <pre class="prettyprint">
+    $transport = new Proem\Service\Asset\Generic;
+    $transport
+        ->setParams([
+            'server'   => 'smtp.foo.com',
+            'username' => 'username',
+            'password' => 'password'
+        ])->set('Transport', function($a) {
+            $p = $a->getParams();
+            return new Transport($p['server'], $p['username'], $p['password']));
+        });
+
+    $mail = new Proem\Service\Asset\Generic;
+    $mail->set('Mail', function($a, $am) {
+        return new Mail($am->getAsset('transport'));
+    });
+
+    $man = new Proem\Service\Manager;
+    $man->set('transport', $transport);
+    $man->set('mail', $mail);
+  </pre>
+  <div class="alert alert-info">
+    Note: The second argument to our Closure (used in the $mail example) is the <em>Service Asset Manager</em> itself.
+  </div>
+  <p>
+    Now, to send an email we might use something like:
+  </p>
+  <pre class="prettyprint">
+    $am->get('mail')->send('foo@foo.com');
+  </pre>
+</div>
+<div class="well">
+  <h3>Returning the same object on each invocation</h3>
+  <p>
+    The examples above all return a brand new object each time we retrieve an <em>Asset</em>, sometimes we want the same object returned again
+    and again. We can do this by simply wrapping our Closure within the <em>single()</em> method.
+  </p>
+  <pre class="prettyprint">
+    $asset->set('Foo', $asset->single(function() {
+        return new Foo;
+    }));
+    $a = $asset->get();
+    $b = $asset->get();
+    $c = $asset->get();
+  </pre>
+  <p>
+    In the above example $a, $b and $c are actually the same object.
+  </p>
+</div>
+<div class="well">
+  <h3>Making re-usable <em>Assets</em></h3>
+  <p>
+    Throughout this these examples we have been creating <em>Assets</em> on the fly using the <em>new</em> operator. If we need to re-use these
+    <em>Assets</em> within different locations or <em>Asset Managers</em> we can actually make concrete classes of them.
+  </p>
+  <pre class="prettyprint">
+    class FooAsset extends Proem\Service\Asset\Generic
+    {
+        public function __construct()
+        {
+            $this->set('Foo', $this->single(function() {
+                return new Foo;
+            }));
+        }
+    }
+  </pre>
+</div>
+<div class="prettyprint">
+  <h3>Validating your Assets</h3>
+  <p>
+    I have already touched on the fact that each <em>Asset</em> needs to advertise what object it provides through the first argument to set().
+    This value is actually used internally when you call get() to check that the <em>Asset</em> actually returns what it advertises.
+  </p>
+  <p>
+    Advertising that your <em>Asset</em> returns something it doesn't:
+  </p>
+  <pre class="prettyprint">
+    $asset->set('Foo', function() { return new Bar; });
+  </pre>
+  <p>
+    will produce an error when you try and retrieve the object from the <em>Asset</em>. This mechanism allows us to trust _Assets_ return what you expect.
+  </p>
+  <p>
+    If you want to name your asset something more descriptive than the object it returns, you can do so, but then you need to manually set what the <em>Asset</em> provides.
+  </p>
+  <p>
+    If need be, you can check what an <em>Asset</em> provides before using it:
+  </p>
+  <pre class="prettyprint">
+    if ($asset->provides('Foo')) {
+        $foo = $asset->get();
+    }
+  </pre>
+  <p>
+    This same functionality has also been extended through to the <em>Service Manager</em>. You can check to see if the manager provides an object.
+  </p>
+  <pre class="prettyprint">
+    if ($manager->provides('Foo')) {
+  </pre>
+  <p>
+    This will return true if some <em>Asset</em> within the manager provides <em>Foo</em>
+  </p>
+  <p>
+    We can also quickly check that a manager provides mutliple <em>Assets</em>
+  </p>
+  <pre class="prettyprint">
+    if ($manager->provides(['Foo', 'Bar', 'Bob'])) {
+  </pre>
+  <p>
+    Checking a specific <em>Asset</em> provides a particular object is also easy.
+  </p>
+  <pre class="prettyprint">
+    if ($manager->provides('Something', 'Foo')) {
+      $foo = $manager->get('Something');
+    }
+  </pre>
+  <p>
+    Here, we are guaranteed that the <em>Asset</em> stored within the <em>Something</em> index does indeed provide the <em>Foo</em> bject.
+  </p>
+  <p>
+    On top of that, if you don't care what <em>Asset</em> you get and just want any <em>Asset</em> that will provide the functionality
+    you need you can do that also.
+  </p>
+  <pre class="prettyprint">
+    if ($manager->provides('Foo')) {
+        $foo = $manager->getProvided('Foo');
+    }
+  </pre>
+  <p>
+    This will return the first <em>Asset</em> found that provides the <em>Foo</em> object.
+  </p>
+</div>

@@ -1,0 +1,304 @@
+layout: docs.twig
+---
+<div class="well">
+  <h2>The signals component</h2>
+  <p>
+    The Signal component is a simple implementation of the <a href="http://en.wikipedia.org/wiki/Observer_pattern">Observer Pattern</a>
+    used to <em>publish</em> events to subscribing <em>listeners</em>. Listeners are registered by index <em>(name)</em> with an instance
+    of the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Manager.php">Signal Manager</a> object, when an event
+    using this index <em>(name)</em> is then <em>triggered</em> (this also happens on the
+    <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Manager.php">Signal Manager</a> object) the listener is then invoked.
+  </p>
+  <p>
+    An <em>Event</em> will typically pass along to the <em>Listener</em> some basic meta data such as where, when and how the
+    <em>Event</em> was triggered. The <em>Listener</em> can then use this meta data to perform some task. In Proem, if the <em>Listener</em>
+    also returns any value, this data will be passed back to the <em>Event</em> and (if defined) will trigger a callback on the <em>Event</em>.
+  </p>
+  <p>
+    This design allows great flexibility as <em>Listeners</em> are very loosely coupled from the application while still being able to
+    communicate and trigger events on the application themselves.
+  </p>
+</div>
+<div class="well">
+  <h3>A simple example</h3>
+  <pre class="prettyprint">
+    require_once 'phar://proem.phar';
+
+    $signal_manager = new Proem\Signal\Manager;
+
+    // Attach a listener to 'some.event'
+    $signal_manager->attach([
+        'name'      => 'some.event',
+        'callback'  => function($e) {
+            var_dump($e);
+        }
+    ]);
+
+    // Trigger the 'some.event' event.
+    $signal_manager->trigger(['name' => 'some.event']);
+  </pre>
+  <p>
+    This returns:
+  </p>
+  <pre>
+    object(Proem\Api\Signal\Event\Generic)#63 (3) {
+      ["params":"Proem\Api\Signal\Event\Generic":private]=>
+      NULL
+      ["target":"Proem\Api\Signal\Event\Generic":private]=>
+      NULL
+      ["method":"Proem\Api\Signal\Event\Generic":private]=>
+      NULL
+    }
+  </pre>
+  <p>
+    This output tells us that $e represents a <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Event/Generic.php">Proem\Signal\Event\Generic</a>
+    object and hints at the fact that we can send parameters to the <em>Listener</em> and indeed we can:
+  </p>
+  <pre class="prettyprint">
+    require_once 'phar://proem.phar';
+
+    $signal_manager = new Proem\Signal\Manager;
+
+    // Attach a listener
+    $signal_manager->attach([
+        'name'      => 'some.event',
+        'callback'  => function($e) {
+            echo $e->getParams()['foo'];
+        }
+    ]);
+
+    $signal_manager->trigger([
+        'name'      => 'some.event',
+        'params'    => ['foo' => 'bar']
+    ]);
+  </pre>
+  <p>
+    The above example outputs 'bar'. But what are the 'target' and 'method' properties visible in the first examples var_dump? These are
+    more parameters used to provide more context around our event. Generally, <em>Events</em> would be triggered from within an object,
+    passing this object as the <em>target</em> and the method the <em>Event</em> was triggered from as the <em>method</em> gives our
+    listener a lot more context and the opportunity to do something more useful:
+  </p>
+  <pre class="prettyprint">
+    require_once 'phar://proem.phar';
+
+    class Foo
+    {
+        protected $manager;
+        public function __construct(Proem\Signal\Manager $manager)
+        {
+            $this->manager = $manager;
+        }
+
+        public function something() {
+            $this->manager->trigger([
+                'name'      => 'foo.something',
+                'params'    => ['foo' => 'bar'],
+                'target'    => $this,
+                'method'    => __FUNCTION__
+            ]);
+        }
+    }
+
+    $signal_manager = new Proem\Signal\Manager;
+
+    $signal_manager->attach([
+        'name'      => 'foo.something',
+        'callback'  => function($e) {
+            echo get_class($e->getTarget()) . "\n";
+            echo $e->getMethod();
+        }
+    ]);
+
+    (new Foo($signal_manager))->something();
+  </pre>
+  <p>
+    We can also attach multiple <em>Listeners</em> to the same <em>Event</em>.
+  </p>
+  <pre class="prettyprint">
+    require_once 'phar://proem.phar';
+
+    $signal_manager = new Proem\Signal\Manager;
+
+    // Attach a listener to 'some.event'
+    $signal_manager->attach([
+        'name'      => 'some.event',
+        'callback'  => function($e) {
+            echo "Event 1\n";
+        }
+    ])->attach([
+        'name'      => 'some.event',
+        'callback'  => function($e) {
+            echo "Event 2\n";
+        }
+    ]);
+
+    // Trigger the 'some.event' event.
+    $signal_manager->trigger(['name' => 'some.event']);
+  </pre>
+  <p>
+    Outputs:
+  </p>
+  <pre>
+    Event 1
+    Event 2
+  </pre>
+  <p>
+    <em>Listeners</em> can also be prioritised to execute before others:
+  <pre class="prettyprint">
+    require_once 'phar://proem.phar';
+
+    $signal_manager = new Proem\Signal\Manager;
+
+    // Attach a listener to 'some.event'
+    $signal_manager->attach([
+        'name'      => 'some.event',
+        'callback'  => function($e) {
+            echo "Event 1\n";
+        }
+    ])->attach([
+        'name'      => 'some.event',
+        'priority'  => 100,
+        'callback'  => function($e) {
+            echo "Event 2\n";
+        }
+    ]);
+
+    // Trigger the 'some.event' event.
+    $signal_manager->trigger(['name' => 'some.event']);
+  </pre>
+  <p>
+    This outputs:
+  </p>
+  <pre>
+    Event 2
+    Event 1
+  </pre>
+  <p>
+    Looking at the above examples we can see that <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Event/Generic.php">Proem\Signal\Event\Generic</a>
+    provides some simple getParams(), getTarget() and getMethod() getters. Often however, we will want to implement our own getters and setters just to make our code more
+    readable. We can do this by using creating and then using a <em>Custom Event</em>.
+  </p>
+</div>
+<div class="well">
+  <h3>Custom events</h3>
+  <p>
+    When triggering an event without an <em>event</em> parameter the <em>Event</em> used is the standard <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Event/Generic.php">Proem\Signal\Event\Generic</a>
+    <em>Event</em> as provided by the framework. By passing an <em>event</em> parameter to our <em>trigger</em> call we can override this with something providing more functionality.
+  </p>
+  <pre class="prettyprint">
+    require_once 'phar://proem.phar';
+
+    class CustomEvent extends Proem\Signal\Event\Generic
+    {
+        private $custom;
+
+        public function setSomeCustomProperty($value)
+        {
+            $this->custom = $value;
+            return $this;
+        }
+
+        public function getSomeCustomProperty()
+        {
+            return $this->custom;
+        }
+    }
+
+    $signal_manager = new Proem\Signal\Manager;
+
+    $signal_manager->attach([
+        'name'      => 'foo.something',
+        'callback'  => function($e) {
+            echo $e->getParams()['someparam'] . "\n";
+            echo $e->getSomeCustomProperty();
+        }
+    ]);
+
+    $signal_manager->trigger([
+        'name' => 'foo.something',
+        'params'    => ['someparam' => 'somevalue'],
+        'event'     => (new CustomEvent())->setSomeCustomProperty('some custom value')
+    ]);
+  </pre>
+  <p>
+    As expected, this returns the output:
+  </p>
+  <pre>
+    somevalue
+    some custom value
+  </pre>
+</div>
+<div class="well">
+  <h3>Triggering an Event response</h3>
+  <p>
+    The above examples are all well and good, but often, we will want our listeners to trigger some action back at the
+    location where our original <em>Event</em> was triggered. This is easily achieved by defining a <em>callback</em> on
+    our <em>Event</em> and returning a value from our <em>Listener</em>.
+  </p>
+  <pre class="prettyprint">
+    require_once 'phar://proem.phar';
+
+    $signal_manager = new Proem\Signal\Manager;
+
+    $signal_manager->attach([
+        'name'      => 'foo.something',
+        'callback'  => function($e) {
+            return "Hello from a listener";
+        }
+    ]);
+
+    $signal_manager->trigger([
+        'name' => 'foo.something',
+        'callback' => function($response) {
+            echo $response;
+        }
+    ]);
+  </pre>
+  <p>
+    Of course, this is a pretty trivial example, but it does describe how data can be returned back to our <em>Event</em> from
+    our <em>Listener</em>. Lets do something more interesting:
+  </p>
+  <pre class="prettyprint">
+    require_once 'phar://proem.phar';
+
+    class Foo 
+    {
+        protected $manager;
+        public function __construct(Proem\Signal\Manager $manager)
+        {
+            $this->manager = $manager;
+        }
+
+        public function something() {
+            $this->manager->trigger([
+                'name'      => 'foo.something',
+                'callback'  => function($r) {
+                    if ($r) {
+                        $this->doSomethingElse();
+                    }
+                }
+            ]);
+        }
+
+        public function doSomethingElse()
+        {
+            echo "Doing something else";
+        }
+    }
+
+    $signal_manager = new Proem\Signal\Manager;
+
+    $signal_manager->attach([
+        'name'      => 'foo.something',
+        'callback'  => function($e) {
+            return true;
+        }
+    ]);
+
+    (new Foo($signal_manager))->something();
+  </pre>
+  <p>
+    Here we create a new Foo object and call the something() method, this method triggers the foo.something event which
+    returns true back to our <em>Event</em> which in turn calls the doSomethingElse() method on the Foo object.
+  </p>
+</div>

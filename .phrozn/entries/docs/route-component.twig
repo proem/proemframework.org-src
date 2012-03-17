@@ -1,0 +1,183 @@
+layout: docs.twig
+---
+<div class="well">
+  <h1>The routing component</h1>
+  <p>
+    Routing is the process of parsing a uri and mapping the resultant tokens to modules, controllers, actions and further
+    parameters. At it's simplest, the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Routing/Route/Standard.php">standard route</a>
+    provided by Proem will map a uri such as /foo/bar/boo/id/12 to the 'Foo' module, 'Bar' controller (class), 'Boo' action
+    (method) and pass it the number 12 as the parameter 'id'. More complex configurations can be achieved and we can even remap
+    uri's to modules, controllers and actions that are not necessarily obvious from looking at the uri.
+  </p>
+</div>
+<div class="well">
+  <h3>Creating a route.</h3>
+  <p>
+    The route described in the previous paragraph can be created in Proem very easily using:
+  </p>
+  <pre class="prettyprint">
+    include 'phar://proem.phar';
+
+    use Proem\Routing\Route;
+
+    (new Standard([
+        'rule' => '/:module/:controller/:action/:params'
+    ]))->process('/foo/bar/boo/id/12'); // This is the uri to be processed
+  </pre>
+  <p>
+    The <em>:module</em>, <em>:controller</em>, <em>:action</em> and <em>:params</em> tokens are
+    internally replaced by more complex regular expressions. When <em>process()</em>
+    is called the rule is tested against the $uri argument. If the entire uri
+    matches this series of regular expressions the matching data is stored within a
+    <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Dispatch/Payload.php">Dispatch\Payload</a>
+    object, the <em>populated</em> flag is set on it and this <em>Payload</em>
+    is then returned from the <em>Route</em> object's <em>process()</em> method. From the
+    <em>Payload</em> this matching data can be referenced by the corresponding names
+    module, controller, action and params. These names have special meaning within
+    the <em>Standard Route</em> and are defined as simple yet very common defaults.
+  </p>
+  <p> 
+    The tokens <em>:module</em>, <em>:controller</em> and <em>:action</em> all use the same regular expression pattern internally,
+    <strong>'[a-zA-Z0-9\_\+\-%]+'</strong>, this pattern is stored within another token called <em>:default</em>. Params is a little
+    bit special and it's regular expression is stored internally in a token named :gobble which looks like,
+    <strong>'[a-zA-Z0-9\_\+\-%\/]+'</strong>. This will basically gobble everything including backslashes and then return the
+    matches as a key => value par split on that backslash. So a match like a/b/c/d will return ['a' => 'b', 'c' => 'd'].
+  </p>
+  <p>
+    We could have written the above rule as:
+  </p>
+  <pre class="prettyprint">
+    $route = new Standard([
+        'rule' => '/[a-zA-Z0-9\_\+\-%]+\/[a-zA-Z0-9\_\+\-%]+\/[a-zA-Z0-9\_\+\-%]+\/[a-zA-Z0-9\_\+\-%\/]+'
+    ]);
+  </pre>
+  <p>
+    While this would have found a match, the Router would not have known what indexes to use to store it's results in
+    making the rule useless. Hopefully this explains how the <em>:tokens</em> (names starting with a colon) are used to name
+    our matches so we can actually reference them.
+  </p>
+</div>
+<div class="well">
+  <h3>Defining custom tokens</h3>
+  <p>
+    While the above defaults are useful, at times you'll want to name your own tokens. This is as simple as placing your
+    token in the desired location in the rule, then defining a regular expression for that token to use within the <em>filters</em> array.
+  </p>
+  <pre class="prettyprint">
+    $route = new Standard([
+        'rule'    => '/:module/:controller/:action/:id'
+        'filters' => ['id' => '[0-9]+']
+    ]);
+  </pre>
+  <p>
+    This would match a uri such as /foo/bar/boo/12 and return ['module' => 'foo', 'controller' => 'bar', 'action' => 'boo', 'id' => 12].
+  </p>
+</div>
+<div class="well">
+  <h3>Using built in filters</h3>
+  <p>
+    Because some regular expression patterns are so common, Proem has also provided a simple mechanism for using
+    them in filters. The above rule could also have been written using:
+  </p>
+  <pre class="prettyprint">
+    $route = new Standard([
+        'rule'    => '/:module/:controller/:action/:id'
+        'filters' => ['id' => ':int']
+    ]);
+  </pre>
+  <p>
+    The defaults filters defined within the <em>Standard Route</em> are:
+  </p>
+  <pre>
+    [
+        ':default'  => '[a-zA-Z0-9_\+\-%]+',
+        ':gobble'   => '[a-zA-Z0-9_\+\-%\/]+',
+        ':int'      => '[0-9]+',
+        ':alpha'    => '[a-zA-Z]+',
+        ':slug'     => '[a-zA-Z0-9_-]+'
+    ]
+  </pre>
+</div>
+<div class="well">
+  <h3>Mapping a uri to a specific <em>module</em> / <em>controller</em> and <em>action</em></h3>
+  <p>
+    Sometimes it is handy to have several different uri's all execute the same controller / action. Or sometimes you might just
+    want to make a short uri for a common task. This can be achieved by forcing the <em>targets</em> of your <em>module</em>, <em>controller</em> or <em>action</em>.
+  </p>
+  <pre class="prettyprint">
+    $route = new Standard([
+        'rule'      => '/user/:name',
+        'targets'   => [
+            'module'        => 'user',
+            'controller'    => 'profiles',
+            'action'        => 'view'
+        ],
+        'filters' => ['name' => ':alpha']
+    ]);
+  </pre>
+  <p>
+    This <em>Route</em> would match the uri /user/trq and map it to the 'User' module, 'Profiles' controller and the 'View' action.
+  </p>
+</div>
+<div class="well">
+  <h3>Configuring multiple <em>Routes</em></h3>
+  <p>
+    The above examples demonstrate how to configure simple rules, but web applications these days are complex beasts with multiple
+    uri's all pointing to multiple resources. How do we handle all this in a simple uniformed manner? Easy, this is where the
+    <a href="(https://github.com/proem/proem/blob/develop/lib/Proem/Api/Routing/Router.php">Router</a> comes into play. The <em>Router</em>
+    is basically responsible for storing a series of <em>Routes</em> and then managing the execution of <em>tests</em> against these <em>Routes</em>.
+  </p>
+  <p>
+    The process is simple, you simply attach (or <em>map</em>) <em>Routes</em> onto the <em>Router</em> in the order you wish them
+    to be tested giving each <em>Route</em> a name. You then call the <em>route()</em> method which loops through all the <em>Routes</em>
+    calling <em>process()</em> on each <em>Route</em>. When a match is found the <em>Dispatch Payload</em> is then tested to see if the
+    <em>Route</em> can actually be dispatched, if it can, it is returned, if not, the loop continues until it finds another match and
+    the process continues.
+  </p>
+  <p>
+    This entire configuration looks like:
+  </p>
+  <pre class="prettyprint">
+    $router = new Router($uri);
+    $payload = $router
+        ->map(
+            'home-page',
+            new Standard([
+                'rule'      => '/',
+                'targets'   => ['controller' => 'home']
+            ])
+        )->map(
+            'login',
+            new Standard([
+                'rule'      => '/login',
+                'targets'   => ['controller' => 'auth', 'action' => 'login']
+            ])
+        )->map(
+            'logout',
+            new Standard([
+                'rule'      => '/logout',
+                'targets'   => ['controller' => 'auth', 'action' => 'logout']
+            ])
+        )->route();
+  </pre>
+  <p>
+    Providing the controller 'Auth' and action 'Login' was executable and the $uri in this example was
+    to be /login the Payload ($payload) would look something like:
+  </p>
+  <pre>
+    object(Proem\Api\Dispatch\Payload)#2 (4) {
+      ["populated":"Proem\Api\Dispatch\Payload":private]=>
+      bool(false)
+      ["data":"Proem\Api\Dispatch\Payload":private]=>
+      object(Proem\Api\Util\Storage\KeyValStore)#3 (1) {
+        ["data":protected]=>
+        array(0) {
+        }
+      }
+      ["controller"]=>
+      string(4) "Auth"
+      ["action"]=>
+      string(5) "Login"
+    }
+  </pre>
+</div>

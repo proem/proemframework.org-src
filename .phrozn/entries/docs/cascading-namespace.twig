@@ -1,11 +1,11 @@
 layout: docs.twig
 ---
 <div class="well">
-  <h1>The cascading namespace</h1>
+  <h1>The cascading name space</h1>
   <p>
-    The entire Proem framework sits within the <em>Proem\Api</em> namespace, yet internally it uses a virtual namespace
-    called <em>Proem</em>, users also use this same <em>virtual</em> namespace when using Proem. This namespace doesn't
-    actually exist, yet you can declare your own versions of classes within this namespace in order to have your
+    The entire Proem framework sits within the <em>Proem\Api</em> name space, yet internally it uses a virtual name space
+    called <em>Proem</em>, users also use this same <em>virtual</em> name space when using Proem. This name space doesn't
+    actually exist, yet you can declare your own versions of classes within this name space in order to have your
     functionality override provided by the framework.
   </p>
 </div>
@@ -17,82 +17,82 @@ layout: docs.twig
     us to implement very simple <em>named arguments</em> functionality. Internally, this method depends on the <em>Option</em> class.
   </p>
   <pre class="prettyprint">
-foreach ($options as $key => $value) {
-    if (isset($defaults[$key]) && ($defaults[$key] instanceof Option)) {
-        $defaults[$key]->setValue($value);
-    } else {
-        $defaults[$key] = new Option($value);
+    foreach ($options as $key => $value) {
+        if (isset($defaults[$key]) && ($defaults[$key] instanceof Option)) {
+            $defaults[$key]->setValue($value);
+        } else {
+            $defaults[$key] = new Option($value);
+        }
     }
-}
   </pre>
   <p>
     Now, in this particular example you can get around most of the problem by simply extending the <em>Option</em> object
     and using it instead wherever you need to use setDefaults().
   </p>
   <pre class="prettyprint">
-class MyOption extends Proem\Util\Opt\Option {}
+    class MyOption extends Proem\Util\Opt\Option {}
 
-class example
-{
-    use Options;
-
-    public function foo(array $options = array())
+    class example
     {
-        $ops = $this->setOptions([
-            'foo' => 'somevalue',
-            'bar' => (new MyOption())->required()
-        ], $options);
+        use Options;
+
+        public function foo(array $options = array())
+        {
+            $ops = $this->setOptions([
+                'foo' => 'somevalue',
+                'bar' => (new MyOption())->required()
+            ], $options);
+        }
     }
-}
   </pre>
   <p>
     You can still see however that if you simply pass a value (like we did with the "foo" option, it will automatically
     instantiate Proem's <em>Option</em> object for you. Normally, you couldn't override this default behaviour
     without actually hacking the framework.
   </p>
-  <p>This is where the <em>cascading namespace</em> comes into play.</em>
+  <p>This is where the <em>cascading name space</em> comes into play.</em>
 </div>
 <div class="well">
   <h3>A more complete example</h3>
   <p>
     Let's say Proem is residing in /usr/share/proem/lib, and we have our project in /home/foo/project. We can create
-    our own <em>Proem</em> namespace within that namespace and override the <em>Option</em> class.
+    our own <em>Proem</em> name space within that name space and override the <em>Option</em> class.
   </p>
   <p><i>/home/foo/project/Proem/Util/Opt/Option.php</i></p>
   <pre class="prettyprint">
-namespace Proem;
+    name space Proem;
 
-class Option extends \Proem\Api\Util\Opt\Option 
-{
-    public function __construct($value = __FILE__) {
-        parent::__construct();
+    class Option extends \Proem\Api\Util\Opt\Option 
+    {
+        public function __construct($value = __FILE__) {
+            parent::__construct();
 
-        $this->addTypeValidator(
-            'null',
-            function($value) {
-                return is_null($value);
-            }
-        );
+            $this->addTypeValidator(
+                'null',
+                function($value) {
+                    return is_null($value);
+                }
+            );
+        }
     }
-}
   </pre>
   <p>You then need to make sure that the AutoLoader is setup to find your directory before it find the framework itself.</p>
   <pre class="prettyprint">
-require_once '/usr/share/proem/lib/Proem/Autoloader.php';
+    require_once '/usr/share/proem/lib/Proem/Autoloader.php';
 
-$loader = new Proem\AutoLoader();
-$loader->registerNamespaces([
-    'Proem' => ['/home/foo/project', '/usr/share/proem/lib']
-])->register();
+    $loader = new Proem\AutoLoader();
+    $loader->registerNamespaces([
+        'Proem' => ['/home/foo/project', '/usr/share/proem/lib']
+    ])->register();
   </pre>
   <p>
-    The trick is to declare your class within the Proem namespace (used both internally and by applications built on top of
+    The trick is to declare your class within the Proem name space (used both internally and by applications built on top of
     Proem) and to extend the corresponding object from within Proem\Api. This new custom class will then be used throughout
     the entire framework and your application wherever the original <em>Option</em> object was previously used.
   </p>
-  <blockquote>
+  <div class="alert alert-info">
     On a side note: You may have noticed that the bootstrap example at the bottom of this page also uses the Autoloader from
-    the Proem namespace. You might wonder how this is possible if the magic happens in the Autoloader itself? Well, the
-    Autoloader is the only class which is actually defined in the \Proem namespace.
-  </blockquote>
+    the Proem name space. You might wonder how this is possible if the magic happens in the Autoloader itself? Well, the
+    Autoloader is the only class which is actually defined in the \Proem name space.
+  </div>
 </div>

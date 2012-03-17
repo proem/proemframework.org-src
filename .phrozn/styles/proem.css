@@ -43,13 +43,35 @@ html, body {
   margin: 20px auto;
 }
 
+.docs {
+  min-height: 900px;
+  background: url(/media/img/big-tree.png) no-repeat fixed;
+  background-position: 25%;
+}
+
+.nav-tabs.nav-stacked > li > a {
+  background-color: #FFF;
+  opacity: 0.97;
+}
+
+.nav-tabs.nav-stacked > li > a:hover {
+  background-color: #C2DF86;
+  opacity: 0.97;
+}
+
+.well {
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  opacity: 0.97;
+}
+
 .docs.container > .row {
   margin-top: 30px;
 }
 
 pre.prettyprint {
   margin: 16px 0;
-  padding: 18px 6px 0 6px;
+  padding: 18px 6px 0 0;
   background-color: #F8F8FF;
   border: 1px solid #e1e1e1;
 }
