@@ -1,0 +1,90 @@
+layout: docs.twig
+---
+<div class="well">
+  <h2>Installation</h2>
+  <p>
+    There are a few different ways to install Proem for use. The first and easiest is to simply download the phar archive and include
+    it where you need it, the second is to download the source and place the lib directory onto your include_path.
+  <p>
+  <p>
+    Which one you choose really depends on what your going to do with Proem.
+  </p>
+</div>
+<div class="well">
+  <h3>Dependencies</h3>
+  <p>
+    Proem was developed from the ground up to take advantage of some of the newer features that are only available in PHP5.4. As such
+    it requires PHP5.4 to run.
+  </p>
+  <p>
+    Other than the PHP5.4 dependency there are currently no other hard requirements to use Proem.
+  </p>
+  <p>
+    Having said that however, if you plan on contributing to the Proem project, plan on installing Proem from source or plan on executing
+    Proem's test suite we recommend you have <a href="http://git-scm.com/">Git</a> installed as well as the <a href="https://github.com/proem/phake">Phake</a>
+    build tool.
+  </p>
+</div>
+<div class="well">
+  <h3>Enable rewrite rules</h3>
+  <p>
+    In order for all the necessary requests to your server to be processed by Proem you need to rewrite these requests to your bootstrap.php file.
+  </p>
+  <p>
+    Using the <a href="http://httpd.apache.org">Apache HHTP Server</a> you can do this by defining a simple rewrite rule.
+  </p>
+  <pre>
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule !\.(js|ico|gif|jpg|png|css)$ /index.php
+  </pre>
+</div>
+<div class="well">
+  <h3>Using the phar archive</h3>
+  <p>
+    The phar archive route is by far the easiest to get up and running with. Simply <a href="http://proemframework.org/downloads/proem.phar">download</a>
+    the latest phar archive and include it into your bootstrap.php file for use.
+  <pre class="prettyprint">
+    include 'phar://proem.phar';
+
+    (new Proem)->init();
+  </pre>
+  <p>
+    The phar archive takes care of adding Proem to the Autoloader so everything is just ready to go.
+  </p>
+</div>
+<div class="well">
+  <h3>Installing the source</h3>
+  <p>
+    You can get Proem's source by either downloading the latest package from <a href="https://github.com/proem/proem/downloads">here</a> or by cloning
+    the repository using git.
+  </p>
+  <p>
+    <code>git clone git://github.com/proem/proem.git</code>
+  </p>
+  <p>
+    Once you have the source code, to make use of it, all you need do is put the lib directory on your include_path.
+  </p>
+  <p>
+    Edit your php.ini file to read similar to:
+  </p>
+  <pre>
+    include_path = ".:/usr/share/php:/path/to/proem/lib"
+  </pre>
+  <p>
+    Even though Proem is now on your include path you still need to manually add the name space to the Autoloader within your bootstrap.php file.
+  </p>
+  <pre class="prettyprint">
+    require_once 'Proem/Autoloader.php';
+
+    use Proem\Autoloader;
+
+    (new AutoLoader)
+      ->registerNamespace('Proem', '/path/to/proem/lib')
+      ->register();
+  </pre>
+  <p>
+    More information on can be found in the <a href="/docs/autoloader.html">Autoloader</a> docs.
+  </p>
+</div>
