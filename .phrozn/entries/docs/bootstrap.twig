@@ -1,0 +1,230 @@
+layout: docs.twig
+---
+<div class="well">
+  <h2>The Bootstrap Process</h2>
+  <p>
+    The process of bootstrapping a framework / application is just a fancy name for <em>setting things up</em>. Generally this
+    entails instantiating some objects, setting some parameters and then calling some method to get the framework up and running.
+    This usually happens within your index.php file or some other file included into it.
+  </p>
+  <p>
+    In most frameworks, what happens once this process is started is almost is something of <em>black box</em>, the next thing your know, your
+    controller is producing a web page. Unless you have a deep understanding of how the framework works this can feel like <em>magic</em>.
+  </p>
+  <p>
+    While this can make it easy to get started building applications with the default functionality your framework provides, it can also
+    make the task of customising this process quite daunting to someone who doesn't really want to dig into a frameworks internals.
+  </p>
+  <div class="alert alert-info">
+    One of Proem's main objectives was to <strong>simplify this process</strong> and make the logic <strong>easy to follow, understand and customise</strong>.
+  </div>
+</div>
+<div class="well">
+  <h3>Bootstrapping Proem</h3>
+  <p>
+    Bootstrapping the Proem framework with only defaults is as simple as:
+  </p>
+  <pre class="prettyprint">
+    (new Proem\Proem)->init();
+  </pre>
+  <p>
+    However, that doesn't really help us much. Below, we are going to describe what exactly happens when you call Proem's init() method, and later
+    how you can attach code to <em>Events</em> that will allow you to customise this process.
+  </p>
+</div>
+<div class="well">
+  <h3>The Proem Object</h3>
+  <p>
+    The Proem object is a home for your application and your entire application runs inside of this single object. It is responsible for setting
+    up all of the low level infrastructure that your application needs in order to execute. Without it, the bootstrap process would be far more
+    tedious. It provides you with an interface for configuring the framework and your application while still allowing a great deal of flexibility
+    through the methods it exposes.
+  </p>
+  <p>
+    So let's have a look at what the Proem object actually does. Starting the with __construct:
+  </p>
+  <pre class="prettyprint">
+    public function __construct()
+    {
+        $this->events = new Asset;
+        $this->events->set('\Proem\Signal\Manager', $this->events->single(function($asset) {
+            return new SignalManager;
+        }));
+
+        $this->serviceManager = new ServiceManager;
+    }
+  </pre>
+  <p>
+    From this small snippet we can see that Proem sets up a <a href="/docs/signal-component.html">Signal Manager</a> and a <a href="/docs/services-component.html">Service Manager</a>.
+    These two objects are passed around the entire bootstrap process and into your application.
+  </p>
+  <p>
+    So what else? Let's take a look at the actual init() method:
+  </p>
+  <a name="init"></a>
+  <pre class="prettyprint">
+    public function init($environment = null)
+    {
+        $this->serviceManager->set('events', $this->events);
+
+        $this->events->get()->trigger([
+            'name'  => 'proem.init',
+            'event' => (new Bootstrap)
+                ->setServiceManager($this->serviceManager)
+                ->setEnvironment($environment)
+        ]);
+
+        (new FilterManager($this->serviceManager))
+            ->attachEvent(new Event\Response, FilterManager::RESPONSE_EVENT_PRIORITY)
+            ->attachEvent(new Event\Request, FilterManager::REQUEST_EVENT_PRIORITY)
+            ->attachEvent(new Event\Route, FilterManager::ROUTE_EVENT_PRIORITY)
+            ->attachEvent(new Event\Dispatch, FilterManager::DISPATCH_EVENT_PRIORITY)
+            ->init();
+    }
+  </pre>
+  <p>
+    From this small snippet is is easy to see that init() seems to store some events within the Service Manager, it then triggers an <em>proem.init</em> event
+    and then creates a new <em>Filter Manager</em>, passing it our <em>Service Manager</em> instance.
+  </p>
+  <p>
+    So WTF is this <em>FilterManager</em>?
+  </p>
+</div>
+<div class="well">
+  <h3>The Bootstrap Filter Chain</h3>
+  <p>
+    Before I explain what the <em>Bootstrap's Filter Chain</em> is and the functionality it provides it's probably a good idea to show you
+    a simple example of the <em>Filter Chain</em> pattern which is a loose variation on the <a href="http://en.wikipedia.org/wiki/Chain-of-responsibility_pattern">Chain of Responsibility</a> pattern.
+  </p>
+  <pre class="prettyprint">
+    class Event1
+    {
+        public function execute($events)
+        {
+            echo "in Event1\n";
+            if ($e = next($events)) {
+                $e->execute($events);
+            }
+            echo "out Event1\n";
+        }
+    }
+
+    class Event2
+    {
+        public function execute($events)
+        {
+            echo "in Event2\n";
+            if ($e = next($events)) {
+                $e->execute($events);
+            }
+            echo "out Event2\n";
+        }
+    }
+
+    class Chain {
+        private $events;
+
+        public function __construct()
+        {
+            $this->events[] = new Event1;
+            $this->events[] = new Event2;
+        }
+
+        public function start()
+        {
+            current($this->events)->execute($this->events);
+        }
+    }
+
+    (new Chain)->start();
+  </pre>
+  <p>
+    If you run this code you will see the output:
+  </p>
+  <pre>
+    in Event1
+    in Event2
+    out Event2
+    out Event1
+  </pre>
+  <p>
+    The Chain is basically a series of events that execute each other in a series.
+  </p>
+  <p>
+    While the Proem Frameworks's Filter Chain implementation is quite a bit more robust than this simple example, the basic premise is the same
+    and the Proem object's init() method merely kicks off this process. It simply executes a series of events that are specifically designed to
+    get the framework up and running.
+  </p>
+</div>
+<div class="well">
+  <h3>So what Filter Events are involved in bootstrapping?</h3>
+  <p>
+    So what Events does Proem's init() method execute? If we look at the <a href="#init">code</a> again you can see the events:
+  </p>
+  <ul>
+    <li>Response</li>
+    <li>Request</li>
+    <li>Route</li>
+    <li>Dispatch</li>
+  </ul>
+  <p>
+    As there names suggest, these Events are responsible for setting up the Request, Response, Routing and Dispatch parts of the framework.a
+    Each of these events extend the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Filter/Event/Generic.php">Proem\Filter\Event\Generic</a> object
+    which is as I said little more robust than the simple Filter Chain example shown above.
+  </p>
+  <p>
+    One of the main differences is that each of these <em>Filter Events</em> has it's own <strong>in</strong>Bound and <strong>out</strong>Bound methods.
+    These basically take the place of the <em>echo "in Event1</em> and <em>echo "out Event1</em> parts of the simple example above.
+  </p>
+  <div class="alert alert-notice">
+    The Filter Component itself is yet to be documented, however it <a href="https://github.com/proem/proem/issues/80">is planned</a>.
+  </div>
+  <p>
+    So, with all that in mind hopefully you can see that the Proem object's init() method executes the following process:
+  </p>
+  <ul>
+    <li>Response inBound: <em>Setup the Response object</em></li>
+    <li>Request inBound: <em>Setup the response object</em></li>
+    <li>Route inBound: <em>Setup The Route object</em></li>
+    <li>Dispatch inBound: <em>Yet to be implemented</em></li>
+    <li>Dispatch outBound: <em> Does nothing</em></li>
+    <li>Route outBound: <em>Does nothing</em></li>
+    <li>Request outBound: <em>Does nothing</em></li>
+    <li>Response outBound: <em>Send response to client</em></li>
+  </ul>
+  <p>
+    These Filter Events do the bulk of the grunt work involved with setting up the framework ready to bootstrap an application.
+  </p>
+</div>
+<div class="well">
+  <h3>How can we customise this process?</h3>
+  <p>
+    So now we have an understanding of what happens when we call <em>(new Proem\Proem)->init()</em>, but how can we customise this process? If you look again
+    at the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Filter/Event/Generic.php">Proem\Filter\Event\Generic</a> abstract you will notice
+    <strong>pre*</strong> and <strong>post*</strong> methods surround the <strong>inBound</strong> and <strong>outBound</strong> methods. These pre / post methods
+    are responsible for publishing <a href="http://dev.web/docs/signal-component.html">Signals</a> which we can lisen to in order to customise the bootstrap process.
+  </p>
+  <p>
+    This means that the Chain publishes 16 different events that we can listen to using the Signals component. On top of that, there is the initial "proem.init" event
+    which we can also see within the <a href="#init">init()</a> code. The Singnals involved are:
+  </p>
+  <ul>
+    <li>proem.init</li>
+    <li>pre.in.response</li>
+    <li>post.in.response</li>
+    <li>pre.in.request</li>
+    <li>post.in.request</li>
+    <li>pre.in.route</li>
+    <li>post.in.route</li>
+    <li>pre.in.dispatch</li>
+    <li>post.in.dispatch</li>
+    <li>pre.out.dispatch</li>
+    <li>post.out.dispatch</li>
+    <li>pre.out.route</li>
+    <li>post.out.route</li>
+    <li>pre.out.request</li>
+    <li>post.out.request</li>
+    <li>pre.out.response</li>
+    <li>post.out.response</li>
+  </ul>
+</div>

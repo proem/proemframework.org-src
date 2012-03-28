@@ -51,18 +51,18 @@ html, body {
 
 .nav-tabs.nav-stacked > li > a {
   background-color: #FFF;
-  opacity: 0.97;
+  opacity: 0.99;
 }
 
 .nav-tabs.nav-stacked > li > a:hover {
   background-color: #C2DF86;
-  opacity: 0.97;
+  opacity: 0.95;
 }
 
 .well {
   box-shadow: none;
   -webkit-box-shadow: none;
-  opacity: 0.97;
+  opacity: 0.99;
 }
 
 .docs.container > .row {
