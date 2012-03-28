@@ -25,9 +25,7 @@ layout: docs.twig
   <pre class="prettyprint">
     require_once './lib/Proem/Autoloader.php';
 
-    use Proem\Autoloader;
-
-    (new AutoLoader)
+    (new \Proem\AutoLoader)
         ->registerNamespace('Proem', './lib')
         ->register();
   </pre>
@@ -43,7 +41,7 @@ layout: docs.twig
   <h3>Multiple locations for a single namespace</h3>
   <p>You can also register multiple file system paths for a single name space to reside in:</p>
   <pre class="prettyprint">
-    (new AutoLoader)
+    (new \Proem\AutoLoader)
         ->registerNamespaces([
             'Proem' => ['/myproem', 'lib']
         ]);
@@ -60,7 +58,7 @@ layout: docs.twig
     Classes implementing the PEAR naming conventions can also be added to the autoloader:
   </p>
   <pre class="prettyprint">
-    (new AutoLoader())
+    (new \Proem\AutoLoader())
         ->registerPearPrefix('Pear_', '/usr/share/php');
   </pre>
   <p>
@@ -74,15 +72,13 @@ layout: docs.twig
   <pre class="prettyprint">
     require_once 'Proem/Autoloader.php';
 
-    use Proem\Autoloader;
-
-    (new AutoLoader())
+    (new \Proem\AutoLoader())
         ->registerNamespace('Proem', './lib')
         ->register();
 
     // some more code
 
-    (new AutoLoader())
+    (new \Proem\AutoLoader())
         ->registerNamespace('Foo', './foo')
         ->register();
 

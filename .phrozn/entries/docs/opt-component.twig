@@ -65,8 +65,8 @@ layout: docs.twig
 <div class="well">
   <h3>Default values & required params</h3>
   <pre class="prettyprint">
-    use Proem\Util\Opt\Options,
-        Proem\Util\Opt\Option;
+    use \Proem\Util\Opt\Options,
+        \Proem\Util\Opt\Option;
 
     class example
     {
@@ -135,9 +135,9 @@ layout: docs.twig
             'foo' => (new Option('somevalue')),
             'bar' => (new Option())->required()
         ], $options);
-    } catch (InvalidArgumentException $e) {
+    } catch (\InvalidArgumentException $e) {
         echo $e->getMessage();
-    } catch (RuntimeException $e) {
+    } catch (\RuntimeException $e) {
         echo $e->getMessage();
     }
   </pre>
@@ -162,9 +162,9 @@ layout: docs.twig
         ], $options);
     } catch (missingBarException $e) {
         echo $e->getMessage();
-    } catch (InvalidArgumentException $e) {
+    } catch (\InvalidArgumentException $e) {
         echo $e->getMessage();
-    } catch (RuntimeException $e) {
+    } catch (\RuntimeException $e) {
         echo $e->getMessage();
     }
   </pre>

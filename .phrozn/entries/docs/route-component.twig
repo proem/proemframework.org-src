@@ -18,9 +18,7 @@ layout: docs.twig
   <pre class="prettyprint">
     include 'phar://proem.phar';
 
-    use Proem\Routing\Route;
-
-    (new Standard([
+    (new \Proem\Routing\Route\Standard([
         'rule' => '/:module/:controller/:action/:params'
     ]))->process('/foo/bar/boo/id/12'); // This is the uri to be processed
   </pre>
@@ -47,9 +45,9 @@ layout: docs.twig
     We could have written the above rule as:
   </p>
   <pre class="prettyprint">
-    $route = new Standard([
+    (new \Proem\Routing\Route\Standard([
         'rule' => '/[a-zA-Z0-9\_\+\-%]+\/[a-zA-Z0-9\_\+\-%]+\/[a-zA-Z0-9\_\+\-%]+\/[a-zA-Z0-9\_\+\-%\/]+'
-    ]);
+    ]));
   </pre>
   <p>
     While this would have found a match, the Router would not have known what indexes to use to store it's results in
@@ -64,10 +62,10 @@ layout: docs.twig
     token in the desired location in the rule, then defining a regular expression for that token to use within the <em>filters</em> array.
   </p>
   <pre class="prettyprint">
-    $route = new Standard([
+    (new \Proem\Routing\Route\Standard([
         'rule'    => '/:module/:controller/:action/:id'
         'filters' => ['id' => '[0-9]+']
-    ]);
+    ]));
   </pre>
   <p>
     This would match a uri such as /foo/bar/boo/12 and return ['module' => 'foo', 'controller' => 'bar', 'action' => 'boo', 'id' => 12].
@@ -80,13 +78,13 @@ layout: docs.twig
     them in filters. The above rule could also have been written using:
   </p>
   <pre class="prettyprint">
-    $route = new Standard([
+    (new \Proem\Routing\Route\Standard([
         'rule'    => '/:module/:controller/:action/:id'
         'filters' => ['id' => ':int']
-    ]);
+    ]));
   </pre>
   <p>
-    The defaults filters defined within the <em>Standard Route</em> are:
+    The default filters defined within the <em>Standard Route</em> are:
   </p>
   <pre>
     [
@@ -105,7 +103,7 @@ layout: docs.twig
     want to make a short uri for a common task. This can be achieved by forcing the <em>targets</em> of your <em>module</em>, <em>controller</em> or <em>action</em>.
   </p>
   <pre class="prettyprint">
-    $route = new Standard([
+    (new \Proem\Routing\Route\Standard([
         'rule'      => '/user/:name',
         'targets'   => [
             'module'        => 'user',
@@ -113,7 +111,7 @@ layout: docs.twig
             'action'        => 'view'
         ],
         'filters' => ['name' => ':alpha']
-    ]);
+    ]));
   </pre>
   <p>
     This <em>Route</em> would match the uri /user/trq and map it to the 'User' module, 'Profiles' controller and the 'View' action.
@@ -138,23 +136,23 @@ layout: docs.twig
     This entire configuration looks like:
   </p>
   <pre class="prettyprint">
-    $router = new Router($uri);
+    $router = new \Proem\Routing\Router\Standard;
     $payload = $router
         ->map(
             'home-page',
-            new Standard([
+            new \Proem\Routing\Route\Standard([
                 'rule'      => '/',
                 'targets'   => ['controller' => 'home']
             ])
         )->map(
             'login',
-            new Standard([
+            new \Proem\Routing\Route\Standard([
                 'rule'      => '/login',
                 'targets'   => ['controller' => 'auth', 'action' => 'login']
             ])
         )->map(
             'logout',
-            new Standard([
+            new \Proem\Routing\Route\Standard([
                 'rule'      => '/logout',
                 'targets'   => ['controller' => 'auth', 'action' => 'logout']
             ])

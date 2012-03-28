@@ -48,7 +48,7 @@ layout: docs.twig
   <pre class="prettyprint">
     include 'phar://proem.phar';
 
-    (new Proem)->init();
+    (new \Proem\Proem)->init();
   </pre>
   <p>
     The phar archive takes care of adding Proem to the Autoloader so everything is just ready to go.
@@ -78,9 +78,7 @@ layout: docs.twig
   <pre class="prettyprint">
     require_once 'Proem/Autoloader.php';
 
-    use Proem\Autoloader;
-
-    (new AutoLoader)
+    (new \Proem\AutoLoader)
       ->registerNamespace('Proem', '/path/to/proem/lib')
       ->register();
   </pre>
