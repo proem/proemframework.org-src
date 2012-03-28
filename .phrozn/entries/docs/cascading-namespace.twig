@@ -30,7 +30,7 @@ layout: docs.twig
     and using it instead wherever you need to use setDefaults().
   </p>
   <pre class="prettyprint">
-    class MyOption extends Proem\Util\Opt\Option {}
+    class MyOption extends \Proem\Util\Opt\Option {}
 
     class example
     {
@@ -60,7 +60,7 @@ layout: docs.twig
   </p>
   <p><i>/home/foo/project/Proem/Util/Opt/Option.php</i></p>
   <pre class="prettyprint">
-    name space Proem;
+    namespace Proem;
 
     class Option extends \Proem\Api\Util\Opt\Option 
     {
@@ -80,7 +80,7 @@ layout: docs.twig
   <pre class="prettyprint">
     require_once '/usr/share/proem/lib/Proem/Autoloader.php';
 
-    $loader = new Proem\AutoLoader();
+    $loader = new \Proem\AutoLoader();
     $loader->registerNamespaces([
         'Proem' => ['/home/foo/project', '/usr/share/proem/lib']
     ])->register();

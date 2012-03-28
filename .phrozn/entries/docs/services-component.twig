@@ -58,7 +58,7 @@ layout: docs.twig
     In Proem the <em>Service Asset Manager</em> as passed into (injected) many other objects as the frameworks bootstrap execution flow is processed. This then makes <em>Assets</em>
     available in the places you need them.
   </p>
-</pre>
+</div>
 <div class="well">
   <h3>Why?</h3>
   <p>
@@ -135,7 +135,7 @@ layout: docs.twig
     with the <em>Service Asset Manager</em> we can also set up any other <em>object</em> dependencies our object might have.
   </p>
   <pre class="prettyprint">
-    $transport = new Proem\Service\Asset\Generic;
+    $transport = new \Proem\Service\Asset\Generic;
     $transport
         ->setParams([
             'server'   => 'smtp.foo.com',
@@ -146,12 +146,12 @@ layout: docs.twig
             return new Transport($p['server'], $p['username'], $p['password']));
         });
 
-    $mail = new Proem\Service\Asset\Generic;
+    $mail = new \Proem\Service\Asset\Generic;
     $mail->set('Mail', function($a, $am) {
         return new Mail($am->getAsset('transport'));
     });
 
-    $man = new Proem\Service\Manager;
+    $man = new \Proem\Service\Manager;
     $man->set('transport', $transport);
     $man->set('mail', $mail);
   </pre>
@@ -201,7 +201,7 @@ layout: docs.twig
     }
   </pre>
 </div>
-<div class="prettyprint">
+<div class="well">
   <h3>Validating your Assets</h3>
   <p>
     I have already touched on the fact that each <em>Asset</em> needs to advertise what object it provides through the first argument to set().

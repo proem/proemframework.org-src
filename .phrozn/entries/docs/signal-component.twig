@@ -24,7 +24,7 @@ layout: docs.twig
   <pre class="prettyprint">
     require_once 'phar://proem.phar';
 
-    $signal_manager = new Proem\Signal\Manager;
+    $signal_manager = new Proem\Signal\Manager\Standard;
 
     // Attach a listener to 'some.event'
     $signal_manager->attach([
@@ -57,7 +57,7 @@ layout: docs.twig
   <pre class="prettyprint">
     require_once 'phar://proem.phar';
 
-    $signal_manager = new Proem\Signal\Manager;
+    $signal_manager = new Proem\Signal\Manager\Standard;
 
     // Attach a listener
     $signal_manager->attach([
@@ -84,7 +84,12 @@ layout: docs.twig
     class Foo
     {
         protected $manager;
-        public function __construct(Proem\Signal\Manager $manager)
+
+        /**
+         * Proem\Signal\Manager\Template is the interface implemented by
+         * Proem\Signal\Manager\Standard
+         */
+        public function __construct(Proem\Signal\Manager\Template $manager)
         {
             $this->manager = $manager;
         }
@@ -99,7 +104,7 @@ layout: docs.twig
         }
     }
 
-    $signal_manager = new Proem\Signal\Manager;
+    $signal_manager = new Proem\Signal\Manager\Standard;
 
     $signal_manager->attach([
         'name'      => 'foo.something',
@@ -117,7 +122,7 @@ layout: docs.twig
   <pre class="prettyprint">
     require_once 'phar://proem.phar';
 
-    $signal_manager = new Proem\Signal\Manager;
+    $signal_manager = new Proem\Signal\Manager\Standard;
 
     // Attach a listener to 'some.event'
     $signal_manager->attach([
@@ -147,7 +152,7 @@ layout: docs.twig
   <pre class="prettyprint">
     require_once 'phar://proem.phar';
 
-    $signal_manager = new Proem\Signal\Manager;
+    $signal_manager = new Proem\Signal\Manager\Standard;
 
     // Attach a listener to 'some.event'
     $signal_manager->attach([
@@ -204,7 +209,7 @@ layout: docs.twig
         }
     }
 
-    $signal_manager = new Proem\Signal\Manager;
+    $signal_manager = new Proem\Signal\Manager\Standard;
 
     $signal_manager->attach([
         'name'      => 'foo.something',
@@ -238,7 +243,7 @@ layout: docs.twig
   <pre class="prettyprint">
     require_once 'phar://proem.phar';
 
-    $signal_manager = new Proem\Signal\Manager;
+    $signal_manager = new Proem\Signal\Manager\Standard;
 
     $signal_manager->attach([
         'name'      => 'foo.something',
@@ -264,7 +269,12 @@ layout: docs.twig
     class Foo 
     {
         protected $manager;
-        public function __construct(Proem\Signal\Manager $manager)
+
+        /**
+         * Proem\Signal\Manager\Template is the interface implemented by
+         * Proem\Signal\Manager\Standard
+         */
+        public function __construct(Proem\Signal\Manager\Template $manager)
         {
             $this->manager = $manager;
         }
@@ -286,7 +296,7 @@ layout: docs.twig
         }
     }
 
-    $signal_manager = new Proem\Signal\Manager;
+    $signal_manager = new Proem\Signal\Manager\Standard;
 
     $signal_manager->attach([
         'name'      => 'foo.something',
