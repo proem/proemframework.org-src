@@ -8,15 +8,15 @@ layout: docs.twig
     This usually happens within your index.php file or some other file included into it.
   </p>
   <p>
-    In most frameworks, what happens once this process is started is almost is something of <em>black box</em>, the next thing your know, your
-    controller is producing a web page. Unless you have a deep understanding of how the framework works this can feel like <em>magic</em>.
+    In most frameworks, what happens once this process is started is something of <em>black box</em>, the next thing your know, your
+    controller is producing a web page. Unless you have a deep understanding of how the framework works this process can feel like <em>magic</em>.
   </p>
   <p>
     While this can make it easy to get started building applications with the default functionality your framework provides, it can also
     make the task of customising this process quite daunting to someone who doesn't really want to dig into a frameworks internals.
   </p>
   <div class="alert alert-info">
-    One of Proem's main objectives was to <strong>simplify this process</strong> and make the logic <strong>easy to follow, understand and customise</strong>.
+    One of Proem's main objectives was to <strong>simplify this process</strong> and make the logic <strong>easy to follow, understand</strong> and <strong>customise</strong>.
   </div>
 </div>
 <div class="well">
@@ -25,10 +25,10 @@ layout: docs.twig
     Bootstrapping the Proem framework with only defaults is as simple as:
   </p>
   <pre class="prettyprint">
-    (new Proem\Proem)->init();
+    (new \Proem\Proem)->init();
   </pre>
   <p>
-    However, that doesn't really help us much. Below, we are going to describe what exactly happens when you call Proem's init() method, and later
+    However, that doesn't really help us much. Below, we are going to describe what exactly happens when you call Proem's <a href="http://dev.web/docs/bootstrap.html#init">init()</a> method, and later
     how you can attach code to <em>Events</em> that will allow you to customise this process.
   </p>
 </div>
@@ -47,7 +47,7 @@ layout: docs.twig
     public function __construct()
     {
         $this->events = new Asset;
-        $this->events->set('\Proem\Signal\Manager', $this->events->single(function($asset) {
+        $this->events->set('\Proem\Signal\Manager\Template', $this->events->single(function($asset) {
             return new SignalManager;
         }));
 
@@ -56,10 +56,11 @@ layout: docs.twig
   </pre>
   <p>
     From this small snippet we can see that Proem sets up a <a href="/docs/signal-component.html">Signal Manager</a> and a <a href="/docs/services-component.html">Service Manager</a>.
+    (Asset is an alias of <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Service/Asset/Standard.php">\Proem\Service\Asset\Standard</a>).
     These two objects are passed around the entire bootstrap process and into your application.
   </p>
   <p>
-    So what else? Let's take a look at the actual init() method:
+    So what else? Let's take a look at the actual <a href="http://dev.web/docs/bootstrap.html#init">init()</a> method:
   </p>
   <a name="init"></a>
   <pre class="prettyprint">
@@ -83,17 +84,17 @@ layout: docs.twig
     }
   </pre>
   <p>
-    From this small snippet is is easy to see that init() seems to store some events within the Service Manager, it then triggers an <em>proem.init</em> event
-    and then creates a new <em>Filter Manager</em>, passing it our <em>Service Manager</em> instance.
+    From this small snippet it is easy to see that init() stores some events within the Service Manager (these are added via <em><a href="#attach-events">attachEventListener</a></em>), it then triggers a <em>proem.init</em> event
+    and creates a new <em>Filter Manager</em>, passing it our <em>Service Manager</em> instance.
   </p>
   <p>
-    So WTF is this <em>FilterManager</em>?
+    So WTF is this <em>Filter Manager</em>?
   </p>
 </div>
 <div class="well">
   <h3>The Bootstrap Filter Chain</h3>
   <p>
-    Before I explain what the <em>Bootstrap's Filter Chain</em> is and the functionality it provides it's probably a good idea to show you
+    Before I explain what the <em>Bootstrap's Filter Chain</em> (Managed by the FilterManager) is and the functionality it provides it's probably a good idea to show you
     a simple example of the <em>Filter Chain</em> pattern which is a loose variation on the <a href="http://en.wikipedia.org/wiki/Chain-of-responsibility_pattern">Chain of Responsibility</a> pattern.
   </p>
   <pre class="prettyprint">
@@ -148,10 +149,10 @@ layout: docs.twig
     out Event1
   </pre>
   <p>
-    The Chain is basically a series of events that execute each other in a series.
+    The Chain is basically a bunch of objects that execute each other in a series.
   </p>
   <p>
-    While the Proem Frameworks's Filter Chain implementation is quite a bit more robust than this simple example, the basic premise is the same
+    While the Proem's Filter Chain implementation is quite a bit more robust than this simple example, the basic premise is the same
     and the Proem object's init() method merely kicks off this process. It simply executes a series of events that are specifically designed to
     get the framework up and running.
   </p>
@@ -168,9 +169,9 @@ layout: docs.twig
     <li>Dispatch</li>
   </ul>
   <p>
-    As there names suggest, these Events are responsible for setting up the Request, Response, Routing and Dispatch parts of the framework.a
+    As there names suggest, these Events are responsible for setting up the Request, Response, Routing and Dispatch parts of the framework.
     Each of these events extend the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Filter/Event/Generic.php">Proem\Filter\Event\Generic</a> object
-    which is as I said little more robust than the simple Filter Chain example shown above.
+    which is as I said little more robust (along with the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Filter/Manager/Standard.php">Filter Manager</a> <em>(Chain)</em>) than the simple example shown above.
   </p>
   <p>
     One of the main differences is that each of these <em>Filter Events</em> has it's own <strong>in</strong>Bound and <strong>out</strong>Bound methods.
@@ -187,9 +188,9 @@ layout: docs.twig
     <li>Request inBound: <em>Setup the response object</em></li>
     <li>Route inBound: <em>Setup The Route object</em></li>
     <li>Dispatch inBound: <em>Yet to be implemented</em></li>
-    <li>Dispatch outBound: <em> Does nothing</em></li>
-    <li>Route outBound: <em>Does nothing</em></li>
-    <li>Request outBound: <em>Does nothing</em></li>
+    <li>Dispatch outBound</li>
+    <li>Route outBound</li>
+    <li>Request outBound</li>
     <li>Response outBound: <em>Send response to client</em></li>
   </ul>
   <p>
@@ -205,7 +206,7 @@ layout: docs.twig
     are responsible for publishing <a href="http://dev.web/docs/signal-component.html">Signals</a> which we can lisen to in order to customise the bootstrap process.
   </p>
   <p>
-    This means that the Chain publishes 16 different events that we can listen to using the Signals component. On top of that, there is the initial "proem.init" event
+    This means that the Chain publishes 16 different events that we can listen to using the <a href="/docs/signal-component.html">Signals</a> component. On top of that, there is the initial "proem.init" event
     which we can also see within the <a href="#init">init()</a> code. The Singnals involved are:
   </p>
   <ul>
@@ -227,4 +228,123 @@ layout: docs.twig
     <li>pre.out.response</li>
     <li>post.out.response</li>
   </ul>
+</div>
+<div class="well">
+  <h3>So what do we do with all these signals?</h3>
+  <p>
+    All of the above mentioned signals are entry points to the framework. These are the events we can listen for and act upon in order
+    to customise the bootstrap process.
+  </p>
+  <p>
+    For instance, out of the box there are no <em>Routes</em> set up by Proem. If we want to add a <em>Route</em> to the <em>Router</em> we can do so by
+    waiting for the <em>Router</em> to exist, and then access it and add our <em>Route</em>.
+  <p>
+</div>
+<div class="well">
+  <a name="attach-events"></a>
+  <h3>A simple example, adding a <em>Route</em> to the <em>Router</em></h3>
+  <pre class="prettyprint">
+    namespace MyApp;
+
+    require_once 'phar://proem.phar';
+
+    (new \Proem\Proem)->attachEventListener([
+        'name' => 'post.in.route',
+        'callback' => function($e) {
+            $e->getServiceManager()->get('router')->map([
+                'logout', new \Proem\Routing\Route\Standard([
+                    'rule'      => '/logout',
+                    'targets'   => ['controller' => 'auth', 'action' => 'logout']
+                ])
+            ]);
+        }
+    ])->init();
+  </pre>
+  <p>
+    In this example we can see that the <em>Proem</em> object provides an <em>attachEventListener()</em> method. This method proxies through and attaches listeners
+    to the main <a href="/docs/signal-component.html">Signal Manager</a> that is passed around the framework.
+  <p>
+    If you have read the <a href="/docs/signal-component.html">Signal Component</a> documentation you will know that the <strong><em>$e</em></strong> in this
+    example represents the <em>Event</em> that was triggered.
+  </p>
+  <p>
+    All Events triggered during the <em>bootstrap process</em> are instances of the custom
+    <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Bootstrap/Signal/Event/Bootstrap.php">Bootstrap Signal Event</a> which provides a few extra methods
+    that are specific to the bootstrap process. <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Bootstrap/Signal/Event/Bootstrap.php#L67">getServiceManager()</a> is
+    one such method and provides us access to the Services that have been set up.
+  </p>
+  <p>
+    Because we are listening for the <strong>post.in.route</strong> event, the router already exists and is within the <em>Service Manager</em> ready for us to customise.
+  </p>
+  <p>
+    But what if we don't want to use the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Routing/Router/Standard.php">Standard Router</a>? We could go down the
+    <a href="http://dev.web/docs/cascading-namespace.html">Cascading Namespace</a> path and overload it that way, or, using the <em>Events</em> provided we can overload it on the fly.
+  </p>
+</div>
+<div class="well">
+  <h3>Overloading provided services</h3>
+  <p>
+    For whatever reason we have decided that we need our <em>Router</em> to implement a useless <em>helloWorld</em> method. How do we overload the <em>Router</em> that Proem is
+    going to provide us with by default? Easy.
+  <p>
+  <p>
+    The <em>Router</em> is created within the Router Filter Chain Event <em>inBound()</em>. All we need do is listen for the <strong>pre.in.route</strong> event and from within our listener, return a
+    new <em>Router</em> wrapped within a <a href="/docs/services-component.html">Service Asset Container</a> (Being sure to pass it a valid uri to it's constructor).
+  </p>
+  <pre class="prettyprint">
+    namespace MyApp;
+
+    require_once 'phar://proem.phar';
+
+    // You would normally define this somewhere else and autoload it.
+    class Router extends \Proem\Routing\Router\Standard
+    {
+        public function helloWorld()
+        {
+            return 'Boo!';
+        }
+    }
+
+    (new \Proem\Proem)->attachEventListener([
+        'name' => 'pre.in.route',
+        'callback' => function($e) {
+            return (new \Proem\Service\Asset\Generic)->set('MyApp\Router', function() use ($e) {
+                return new MyApp\Router($e->getServiceManager()->get('request')->getBaseUri());
+            });
+        }
+    ])->init();
+  </pre>
+</div>
+<div class="well">
+  <h3>So what Events do what?</h3>
+  <p>
+    I'm a little hesitant to document this at this early stage. It's safe to say however that any if the pre.in.* event's will accept a listener
+    that can return an <em>Asset</em> holding a <em>Service</em>. Eg; The <em>pre.in.request</em> Event could return an implementation of the
+    <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/IO/Request/Template.php">Request Template</a>.The following inBound()
+    <em>Chain Event</em> will then use this to populate the <em>Service Manager</em> instead of creating it's default.
+  </p>
+  <p>
+    The waters get a bit more unclear when we start dealing with the <em>Response</em> object which is set up on the inBound() <em>Chain Event</em> but will actually
+    also do some work on the way <em>out</em> of the chain.
+  </p>
+  <p>
+    For instance, if you take a look at the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Bootstrap/Filter/Event/Response.php#L136">outBound</a>
+    method on the <em>Response Filter Event</em> you can see that this is used to send any response to the client.
+  </p>
+</div>
+<div class="well">
+  <h3>Summary</h3>
+  <p>
+    I hope this has cleared up a lot about how the bootstrap process is intended to work within Proem. I trust that you can see how easy it is going to be to
+    customise this process to your needs.
+  </p>
+  <p>
+    I can also hear people screaming that "by the time I listen for all these events my bootstrap is going to be a mess!". While this might look like the case at this
+    point in time there are already processes in place to work around this. The <a href="https://github.com/proem/proem/tree/develop/lib/Proem/Api/Ext">Ext</a> name space
+    adds the ability to load <em>Plugins</em> and <em>Modules</em> that are used to group event listeners into self contained name spaces of code that you can load into
+    your bootstrap (this stuff is just <a href="https://github.com/proem/proem/issues/80">yet to be documented</a>).
+  </p>
+  <p>
+    There is also likely to be some form of configuration layer added over the top of the Bootstrap when the current API becomes a little more stable.
+  </p>
 </div>

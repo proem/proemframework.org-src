@@ -2,6 +2,10 @@ html, body {
   height: 100%;
 }
 
+.well h3 {
+  margin-bottom: 8px;
+}
+
 .topnav .navbar .nav {
   float: right;
 }
