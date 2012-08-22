@@ -1,40 +1,28 @@
-layout: docs.twig
+layout: docs/current.twig
 ---
 <div class="well">
   <h2>Installation</h2>
   <p>
     There are a few different ways to install Proem for use. The first and easiest is to simply download the phar archive and include
-    it where you need it, the second is to download the source and place the lib directory onto your include_path.
+    it where you need it, the second is to download the source and include the Autoloader.
   <p>
   <p>
-    Which one you choose really depends on what your going to do with Proem but the phar archive has been proven to incur a slight overhead.
+    Which one you choose really depends on what your going to do with Proem but the phar archive has been proven to incur some overhead and is really only
+    intended to be used as a quick start method.
   </p>
 </div>
 <div class="well">
   <h3>Dependencies</h3>
   <p>
-    Proem was developed from the ground up to take advantage of some of the newer features that are only available in PHP5.4. As such
-    it requires PHP5.4 to run.
+    Proem was developed from the ground up to take advantage of some of the newer features that are only available in PHP5.4. As such it requires PHP5.4 to run.
   </p>
   <p>
-    Other than the PHP5.4 dependency there are currently no other hard requirements to use Proem. The APC extension is however <strong>highly</strong> recommended as it improves
-    the performance of the autoloading mechanism considerably.
+    Other than the PHP5.4 dependency there are currently no other hard requirements to use Proem. If you want to help develop Proem, you will need to download the code (not the phar) and few dependencies,
+    all of which can be installed via <a href="http://getcomposer.org">composer</a> by running <code>composer.phar dev-install</code> from the root of the project.
   </p>
-</div>
-<div class="well">
-  <h3>Enable rewrite rules</h3>
-  <p>
-    In order for all the necessary requests to your server to be processed by Proem you need to rewrite these requests to your bootstrap.php file.
-  </p>
-  <p>
-    Using the <a href="http://httpd.apache.org">Apache HTTP Server</a> you can do this by defining a simple rewrite rule.
-  </p>
-  <pre>
-    RewriteEngine on
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule !\.(js|ico|gif|jpg|png|css)$ /index.php
-  </pre>
+  <div class="alert alert-info">
+    <p>The APC extension is <strong>highly</strong> recommended as it improves the performance of the autoloading mechanism considerably.</p>
+  </div>
 </div>
 <div class="well">
   <h3>Using the phar archive</h3>
@@ -46,39 +34,49 @@ layout: docs.twig
 
     (new \Proem\Proem)->init();
   </pre>
-  <p>
-    The phar archive takes care of adding Proem to the Autoloader so everything is just ready to go.
-  </p>
 </div>
 <div class="well">
-  <h3>Installing the source</h3>
+  <h3>Getting the code</h3>
   <p>
-    You can get Proem's source by either downloading the latest package from <a href="https://github.com/proem/proem/downloads">here</a> or by cloning
-    the repository using git.
+    You can get Proem's source by either downloading the latest package from <a href="https://github.com/proem/proem/downloads">Github</a>. Using <a href="http://getcomposer.org">composer</a>,
+    <code>composer.phar create-project proem/proem</code> or finally by cloning the project from <a href="https://github.com">Github</a>. <code>git clone git://github.com/proem/proem.git</code>
   </p>
   <p>
-    <code>git clone git://github.com/proem/proem.git</code>
-  </p>
-  <p>
-    Once you have the source code, to make use of it, all you need do is put the lib directory on your include_path.
-  </p>
-  <p>
-    Edit your php.ini file to read similar to:
-  </p>
-  <pre>
-    include_path = ".:/usr/share/php:/path/to/proem/lib"
-  </pre>
-  <p>
-    Even though Proem is now on your include path you still need to manually add the name space to the Autoloader within your bootstrap.php file.
+    Once you have the source code, just include the Autoloader.
   </p>
   <pre class="prettyprint">
-    require_once 'Proem/Autoloader.php';
+    require_once '/path/to/proem/lib/Proem/Autoloader.php';
 
     (new \Proem\AutoLoader)
-      ->attachNamespace('Proem', '/path/to/proem/lib')
       ->register();
   </pre>
   <p>
-    More information can be found in the <a href="/docs/autoloader.html">Autoloader</a> docs.
+    More information can be found in the <a href="/docs/current/autoloader.html">Autoloader</a> docs.
   </p>
 </div>
+<div class="well">
+  <h3>Enable rewrite rules</h3>
+  <p>
+    In order for all the necessary requests to your server to be processed by Proem you need to rewrite these requests to your bootstrap (index.php) file.
+  </p>
+  <h5>
+    Using the <a href="http://httpd.apache.org">Apache HTTP Server</a> you can do this by defining a simple rewrite rule:
+  </h5>
+  <pre>
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php
+  </pre>
+</div>
+<div class="well" id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_identifier = '/docs/current/installation';
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>

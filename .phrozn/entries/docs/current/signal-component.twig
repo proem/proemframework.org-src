@@ -1,13 +1,13 @@
-layout: docs.twig
+layout: docs/current.twig
 ---
 <div class="well">
-  <h2>The signals component</h2>
+  <h2>The Signal Component</h2>
   <p>
     The Signal component is a simple implementation of the <a href="http://en.wikipedia.org/wiki/Observer_pattern">Observer Pattern</a>
     used to <em>publish</em> events to subscribing <em>listeners</em>. Listeners are registered by index <em>(name)</em> with an instance
-    of the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Manager.php">Signal Manager</a> object, when an event
+    of the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Signal/Manager.php">Signal Manager</a> object, when an event
     using this index <em>(name)</em> is then <em>triggered</em> (this also happens on the
-    <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Manager.php">Signal Manager</a> object) the listener is then invoked.
+    <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Signal/Manager.php">Signal Manager</a> object) the listener is then invoked.
   </p>
   <p>
     An <em>Event</em> will typically pass along to the <em>Listener</em> some basic meta data such as where, when and how the
@@ -22,123 +22,59 @@ layout: docs.twig
 <div class="well">
   <h3>A simple example</h3>
   <pre class="prettyprint">
-    require_once 'phar://proem.phar';
-
     $signal_manager = new Proem\Signal\Manager\Standard;
 
     // Attach a listener to 'some.event'
-    $signal_manager->attach([
-        'name'      => 'some.event',
-        'callback'  => function($e) {
-            var_dump($e);
-        }
-    ]);
+    $signal_manager->attach('some.event', function($event) {
+        var_dump($event);
+    });
 
     // Trigger the 'some.event' event.
-    $signal_manager->trigger(['name' => 'some.event']);
+    $signal_manager->trigger(new Proem\Signal\Event\Standard('some.event']));
   </pre>
   <p>
     This returns:
   </p>
   <pre>
-    object(Proem\Api\Signal\Event\Generic)#63 (3) {
-      ["params":"Proem\Api\Signal\Event\Generic":private]=>
-      NULL
-      ["target":"Proem\Api\Signal\Event\Generic":private]=>
-      NULL
-      ["method":"Proem\Api\Signal\Event\Generic":private]=>
-      NULL
+    object(Proem\Signal\Event\Generic)#63 (3) {
+      ["params":"Proem\Signal\Event\Generic":private] => NULL
     }
   </pre>
   <p>
-    This output tells us that $e represents a <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Event/Generic.php">Proem\Signal\Event\Generic</a>
-    object and hints at the fact that we can send parameters to the <em>Listener</em> and indeed we can:
+    As you can see, the <em>Event</em> object triggered gets sent to the <em>Listener</em> and is passed into the first argument of it's Callback. We can also use this <em>Event</em> object to pass along
+    extra parameters:
   </p>
   <pre class="prettyprint">
-    require_once 'phar://proem.phar';
-
     $signal_manager = new Proem\Signal\Manager\Standard;
 
     // Attach a listener
-    $signal_manager->attach([
-        'name'      => 'some.event',
-        'callback'  => function($e) {
-            echo $e->getParams()['foo'];
-        }
-    ]);
+    $signal_manager->attach('some.event', function($event) {
+        echo $event->getParam('foo');
+    });
 
-    $signal_manager->trigger([
-        'name'      => 'some.event',
-        'params'    => ['foo' => 'bar']
-    ]);
+    $signal_manager->trigger((new Proem\Signal\Event\Standard('some.event'))->setParam('foo', 'bar'));
   </pre>
   <p>
-    The above example outputs 'bar'. But what are the 'target' and 'method' properties visible in the first examples var_dump? These are
-    more parameters used to provide more context around our event. Generally, <em>Events</em> would be triggered from within an object,
-    passing this object as the <em>target</em> and the method the <em>Event</em> was triggered from as the <em>method</em> gives our
-    listener a lot more context and the opportunity to do something more useful:
+    The above example outputs the string 'bar'.
   </p>
-  <pre class="prettyprint">
-    require_once 'phar://proem.phar';
-
-    class Foo
-    {
-        protected $manager;
-
-        /**
-         * Proem\Signal\Manager\Template is the interface implemented by
-         * Proem\Signal\Manager\Standard
-         */
-        public function __construct(Proem\Signal\Manager\Template $manager)
-        {
-            $this->manager = $manager;
-        }
-
-        public function something() {
-            $this->manager->trigger([
-                'name'      => 'foo.something',
-                'params'    => ['foo' => 'bar'],
-                'target'    => $this,
-                'method'    => __FUNCTION__
-            ]);
-        }
-    }
-
-    $signal_manager = new Proem\Signal\Manager\Standard;
-
-    $signal_manager->attach([
-        'name'      => 'foo.something',
-        'callback'  => function($e) {
-            echo get_class($e->getTarget()) . "\n";
-            echo $e->getMethod();
-        }
-    ]);
-
-    (new Foo($signal_manager))->something();
-  </pre>
+</div>
+<div class="well">
+  <h3>Attaching multiple listeners to a single event</h3>
   <p>
-    We can also attach multiple <em>Listeners</em> to the same <em>Event</em>.
+    We can also attach multiple <em>Listeners</em> to a single <em>Event</em>.
   </p>
   <pre class="prettyprint">
-    require_once 'phar://proem.phar';
-
     $signal_manager = new Proem\Signal\Manager\Standard;
 
     // Attach a listener to 'some.event'
-    $signal_manager->attach([
-        'name'      => 'some.event',
-        'callback'  => function($e) {
-            echo "Event 1\n";
-        }
-    ])->attach([
-        'name'      => 'some.event',
-        'callback'  => function($e) {
-            echo "Event 2\n";
-        }
-    ]);
+    $signal_manager->attach('some.event', function() {
+        echo "Event 1";
+    })->attach('some.event', function() {
+        echo "Event 2";
+    });
 
     // Trigger the 'some.event' event.
-    $signal_manager->trigger(['name' => 'some.event']);
+    $signal_manager->trigger(new Proem\Signal\Event\Standard('some.event'));
   </pre>
   <p>
     Outputs:
@@ -147,29 +83,25 @@ layout: docs.twig
     Event 1
     Event 2
   </pre>
+</div>
+<div class="well">
+  <h3>Prioritising the order in which <em>Listeners</em> are called.</h3>
   <p>
-    <em>Listeners</em> can also be prioritised to execute before others:
+    Left alone listeners will be executed in the order that they are attached to an event, FIFO. However, sometimes you will want to make a listener take a higher priority than others, this
+    can be done by passing the priority as the last argument to the <em>Event Manager's - attach()</em> method.
+  </p>
   <pre class="prettyprint">
-    require_once 'phar://proem.phar';
-
     $signal_manager = new Proem\Signal\Manager\Standard;
 
     // Attach a listener to 'some.event'
-    $signal_manager->attach([
-        'name'      => 'some.event',
-        'callback'  => function($e) {
-            echo "Event 1\n";
-        }
-    ])->attach([
-        'name'      => 'some.event',
-        'priority'  => 100,
-        'callback'  => function($e) {
-            echo "Event 2\n";
-        }
-    ]);
+    $signal_manager->attach('some.event', function() {
+        echo "Event 1";
+    })->attach('some.event', function($e) {
+        echo "Event 2";
+    }, 100);
 
     // Trigger the 'some.event' event.
-    $signal_manager->trigger(['name' => 'some.event']);
+    $signal_manager->trigger(new Proem\Signal\Event\Standard('some.event'));
   </pre>
   <p>
     This outputs:
@@ -178,20 +110,15 @@ layout: docs.twig
     Event 2
     Event 1
   </pre>
-  <p>
-    Looking at the above examples we can see that <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Event/Generic.php">Proem\Signal\Event\Generic</a>
-    provides some simple getParams(), getTarget() and getMethod() getters. Often however, we will want to implement our own getters and setters just to make our code more
-    readable. We can do this by using creating and then using a <em>Custom Event</em>.
-  </p>
 </div>
 <div class="well">
-  <h3>Custom events</h3>
+  <h3>Creating and using Custom Events</h3>
   <p>
-    When triggering an event without an <em>event</em> parameter the <em>Event</em> used is the standard <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Api/Signal/Event/Generic.php">Proem\Signal\Event\Generic</a>
-    <em>Event</em> as provided by the framework. By passing an <em>event</em> parameter to our <em>trigger</em> call we can override this with something providing more functionality.
+    The <em>Standard Event</em> used in the above examples consists of a few simple getter and setter methods like <em>setParam(), getParam(), setParams(), getParams(), setName() and getName()</em> but
+    there will be numerous occasions where you will want to add your own functionality to make the intended use of your Events clearer. This is simply done by creating a class implementing the
+    Signal/Event/Template interface.
   </p>
   <pre class="prettyprint">
-    require_once 'phar://proem.phar';
 
     class CustomEvent extends Proem\Signal\Event\Generic
     {
@@ -211,104 +138,56 @@ layout: docs.twig
 
     $signal_manager = new Proem\Signal\Manager\Standard;
 
-    $signal_manager->attach([
-        'name'      => 'foo.something',
-        'callback'  => function($e) {
-            echo $e->getParams()['someparam'] . "\n";
-            echo $e->getSomeCustomProperty();
-        }
-    ]);
+    $signal_manager->attach('foo.something', function($event) {
+        echo $e->getSomeCustomProperty();
+    });
 
-    $signal_manager->trigger([
-        'name' => 'foo.something',
-        'params'    => ['someparam' => 'somevalue'],
-        'event'     => (new CustomEvent())->setSomeCustomProperty('some custom value')
+    $signal_manager->trigger((new CustomEvent('foo.something'))->setSomeCustomProperty('some custom value'));
     ]);
   </pre>
   <p>
     As expected, this returns the output:
   </p>
   <pre>
-    somevalue
     some custom value
   </pre>
 </div>
 <div class="well">
-  <h3>Triggering an Event response</h3>
+  <h3>Triggering an Event Response</h3>
   <p>
-    The above examples are all well and good, but often, we will want our listeners to trigger some action back at the
-    location where our original <em>Event</em> was triggered. This is easily achieved by defining a <em>callback</em> on
-    our <em>Event</em> and returning a value from our <em>Listener</em>.
+    The above examples are all well and good, but often, we will want our listeners to trigger some action back at the location where our original <em>Event</em> was triggered. This is easily
+    achieved by defining a <em>Callback</em> and passing it as the second argument to the <em>trigger()</em> method. All we need do then is return <strong>any</strong> <em>true</em> value
+    from our <em>Listener</em>.
   </p>
   <pre class="prettyprint">
-    require_once 'phar://proem.phar';
-
     $signal_manager = new Proem\Signal\Manager\Standard;
 
-    $signal_manager->attach([
-        'name'      => 'foo.something',
-        'callback'  => function($e) {
-            return "Hello from a listener";
-        }
-    ]);
+    $signal_manager->attach('foo.something', function() {
+        return "Hello from a listener";
+    });
 
-    $signal_manager->trigger([
-        'name' => 'foo.something',
-        'callback' => function($response) {
-            echo $response;
-        }
-    ]);
+    $signal_manager->trigger('foo.something', function($response) {
+        echo $response;
+    });
   </pre>
   <p>
-    Of course, this is a pretty trivial example, but it does describe how data can be returned back to our <em>Event</em> from
-    our <em>Listener</em>. Lets do something more interesting:
+    Of course, this is a pretty trivial example, but it does describe how data can be returned back to where our <em>Event</em> was first triggered. This concept gives <em>Events</em> an awesome amount
+    of flexibility and makes them extremely useful within both the framework and applications built on top of it. It's almost like a means of communication. Where one a piece of code can communicate
+    with another and that second piece of code can communicate back.
   </p>
-  <pre class="prettyprint">
-    require_once 'phar://proem.phar';
-
-    class Foo 
-    {
-        protected $manager;
-
-        /**
-         * Proem\Signal\Manager\Template is the interface implemented by
-         * Proem\Signal\Manager\Standard
-         */
-        public function __construct(Proem\Signal\Manager\Template $manager)
-        {
-            $this->manager = $manager;
-        }
-
-        public function something() {
-            $this->manager->trigger([
-                'name'      => 'foo.something',
-                'callback'  => function($r) {
-                    if ($r) {
-                        $this->doSomethingElse();
-                    }
-                }
-            ]);
-        }
-
-        public function doSomethingElse()
-        {
-            echo "Doing something else";
-        }
-    }
-
-    $signal_manager = new Proem\Signal\Manager\Standard;
-
-    $signal_manager->attach([
-        'name'      => 'foo.something',
-        'callback'  => function($e) {
-            return true;
-        }
-    ]);
-
-    (new Foo($signal_manager))->something();
-  </pre>
-  <p>
-    Here we create a new Foo object and call the something() method, this method triggers the foo.something event which
-    returns true back to our <em>Event</em> which in turn calls the doSomethingElse() method on the Foo object.
-  </p>
+  <div class="alert alert-info">
+    There is currently a <a href="https://github.com/proem/proem/issues/107">ticket</a> describing a slight change in the above functionality. With this change in place, you will be required to pass an
+    object implementing the Proem\Signal\Event\Template interface back to the place an event was triggered instead of any <em>true</em> value.
+  </div>
 </div>
+<div class="well" id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_identifier = '/docs/current/signal-component';
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>

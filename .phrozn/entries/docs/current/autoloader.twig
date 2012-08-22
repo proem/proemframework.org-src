@@ -1,4 +1,4 @@
-layout: docs.twig
+layout: docs/current.twig
 ---
 <div class="well">
   <h2>The Autoloader</h2>
@@ -13,11 +13,11 @@ layout: docs.twig
     for the file required to load the class.
   </p>
   <p>
-    If the APC caching extension is enabled in your servers configuration Proem's Autoloader will automatically
+    If the <a href="http://php.net/apc">APC</a> caching extension is enabled in your servers configuration Proem's Autoloader will automatically
     make use of this extension, thus optimising class lookups by storing the location of a class within the cache.
   <p>
     Proem's Autoloader is simple to use and enables lazy loading of both the Proem libraries as well
-    as any third party code complying with the PSR-0 standard.
+    as any third party code complying with the <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md">PSR-0 standard</a>.
   </p>
   <p>
     The following example illustrates all the code you need within your bootstrap to be able to use Proem.
@@ -29,30 +29,36 @@ layout: docs.twig
     require_once './lib/Proem/Autoloader.php';
 
     (new \Proem\AutoLoader)
-        ->attachNamespace('Proem', './lib')
         ->register();
   </pre>
   <div class="alert alert-info">
-    Note that you first must manually include the Autoloader.php file itself. Once this is done, you will
-    no longer need any calls to include or require within your code
+    Note that you first must manually include the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Autoloader.php">Autoloader.php</a> file itself. Once this is done, you will
+    no longer need any calls to include or require within your code and Proem is included by default. See <a href="https://github.com/proem/proem/issues/124">here</a>.
   </div>
-  <p>
-    This tells the autoloader that the <em>Proem</em> name space can be found within the ./lib directory.
-  </p>
+</div>
+<div class="well">
+  <h3>Attaching namespaces</h3>
+  <p>The Proem autloader expects namespaces mapped to the paths these can be found in:</p>
+  <pre class="prettyprint">
+    (new \Proem\AutoLoader)
+        ->attachNamespace([
+            'Foo' => '/myfoo'
+        ]);
+  </pre>
 </div>
 <div class="well">
   <h3>Multiple locations for a single namespace</h3>
   <p>You can also register multiple file system paths for a single name space to reside in:</p>
   <pre class="prettyprint">
     (new \Proem\AutoLoader)
-        ->attacheNamespace([
-            'Proem' => ['/myproem', 'lib']
+        ->attachNamespace([
+            'Foo' => ['/morefoo', '/myfoo']
         ]);
   </pre>
   <p>
-    Here, the first path registered will be searched first. So, if you have a class in <em>/myproem/Proem/Proem.php</em>
-    and code which instantiates <em>Proem\Proem</em> the Proem class will be loaded from <em>/myproem/Proem/Proem.php</em>
-    and not <em>lib/Proem/Proem.php</em>
+    Here, the first path registered will be searched first. So, if you have a class in <em>/myfoo/Foo/Foo.php</em>
+    and code which instantiates <em>Foo\Foo</em> the Proem class will be loaded from <em>/morefoo/Foo/Foo.php</em>
+    and not <em>/myfoo/Foo/Foo.php</em>
   </p>
 </div>
 <div class="well">
@@ -76,7 +82,6 @@ layout: docs.twig
     require_once 'Proem/Autoloader.php';
 
     (new \Proem\AutoLoader())
-        ->attachNamespace('Proem', './lib')
         ->register();
 
     // some more code
@@ -88,13 +93,24 @@ layout: docs.twig
     // more code using the Foo namespace
   </pre>
   <p>
-    You can unregister an Autoloader simply, you do however need to firstly store an instance of the autoloader within a variable.
+    You can also unregister an Autoloader simply:
   </p>
   <pre class="prettyprint">
     $autoloader = (new \Proem\AutoLoader());
 
     // some code making use of $autoloader
 
-    $autloader->unregister();
+    $autoloader->unregister();
   </pre>
 </div>
+<div class="well" id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_identifier = '/docs/autoloader';
+  (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
