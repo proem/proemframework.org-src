@@ -93,7 +93,7 @@ layout: docs/dev.twig
   <pre class="prettyprint">
     $signal_manager = new Proem\Signal\Manager\Standard;
 
-    $signal_manager->enableWildcards()->attach('this.is.*', function($event) {
+    $signal_manager->attach('this.is.*', function($event) {
         echo $event->getName();
     })->attach('this.*', function($event) {
         echo $event->getName();
@@ -112,10 +112,6 @@ layout: docs/dev.twig
   </p>
   <p>
     You can for example, attach a listener to all <em>proem</em> events using proem.* or, to attach to <em>all</em> events you would use .*
-  </p>
-  <p>
-    Wildcard notation is disabled by default because it is a fairly process intesive operation. To enable it's usage, call the <em>enableWildcards()</em>
-    method on the <em>Signal Manager</em>
   </p>
 </div>
 <div class="well">
