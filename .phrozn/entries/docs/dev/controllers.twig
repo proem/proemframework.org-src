@@ -56,8 +56,8 @@ layout: docs/dev.twig
     }
   </pre>
   <p>
-    There are also two <a href="/docs/dev/signal-component.html">events</a> triggered when an action is called. The <em>proem.pre.action.*</em> and <em>proem.post.action.*</em> events. Where the *
-    is the <em>action</em> being called. You can setup listeners for these events wherever you like, however, you might often setup these listeners within the actual controller itself.
+    There are also two <a href="/docs/dev/signal-component.html">events</a> triggered when an action is called. The <em>proem.pre.action.&lt;actionname&gt;</em> and <em>proem.post.action.&lt;actioname&gt;</em> events. Where the
+    &lt;actionname&gt; is the <em>action</em> being called. You can setup listeners for these events wherever you like, however, you might often setup these listeners within the actual controller itself.
   </p>
   <pre class="prettyprint">
     class Index extends Proem\Controller\Standard
@@ -75,28 +75,25 @@ layout: docs/dev.twig
         }
     }
   </pre>
-  <div class="alert alert-info">
-    <p>
-      There is also work planned on adding <a href="https://github.com/proem/proem/issues/121">True namespacing</a> to events which will make these listeners much more flexible in that they won't need to be tied to
-      a particular action. eg;
-    </p>
-    <pre class="prettyprint">
-      class Index extends Proem\Controller\Standard
-      {
-          private $db;
+  <p>
+    If you want to have common code setup for all actions, just use <a href="/docs/dev/signal-component.html#wildcards">wilcard notation</a>.
+  </p>
+  <pre class="prettyprint">
+    class Index extends Proem\Controller\Standard
+    {
+        private $db;
 
-          public function init()
-          {
-              $this->assets->get('events')->attach('proem.pre.action.*', [$this, 'dbLoader']);
-          }
+        public function init()
+        {
+            $this->assets->get('events')->attach('proem.pre.action.*', [$this, 'dbLoader']);
+        }
 
-          public function dbLoader()
-          {
-              $this->db = new SomeDBA;
-          }
-      }
-    </pre>
-  </div>
+        public function dbLoader()
+        {
+            $this->db = new SomeDBA;
+        }
+    }
+  </pre>
 </div>
 <div class="well" id="disqus_thread"></div>
 <script type="text/javascript">
