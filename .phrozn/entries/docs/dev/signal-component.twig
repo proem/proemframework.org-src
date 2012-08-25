@@ -85,6 +85,40 @@ layout: docs/dev.twig
   </pre>
 </div>
 <div class="well">
+  <a name="wilcards"></a>
+  <h3>Attaching listeners using wildcard notation</h3>
+  <p>
+    You can attach listeners to multiple events using wildcard notation.
+  </p>
+  <pre class="prettyprint">
+    $signal_manager = new Proem\Signal\Manager\Standard;
+
+    $signal_manager->enableWildcards()->attach('this.is.*', function($event) {
+        echo $event->getName();
+    })->attach('this.*', function($event) {
+        echo $event->getName();
+    });
+
+    // Trigger the 'some.event' event.
+    $signal_manager->trigger(new Proem\Signal\Event\Standard('this.is.some.event'));
+  </pre>
+  <p>
+    The above would produce:
+    <pre>
+      this.is.some.event
+      this.is.some.event
+    </pre>
+    because the <em>this.is.some.event</em> is within the same namespace as both of the listener wildcards.
+  </p>
+  <p>
+    You can for example, attach a listener to all <em>proem</em> events using proem.* or, to attach to <em>all</em> events you would use .*
+  </p>
+  <p>
+    Wildcard notation is disabled by default because it is a fairly process intesive operation. To enable it's usage, call the <em>enableWildcards()</em>
+    method on the <em>Signal Manager</em>
+  </p>
+</div>
+<div class="well">
   <h3>Prioritising the order in which <em>Listeners</em> are called.</h3>
   <p>
     Left alone listeners will be executed in the order that they are attached to an event, FIFO. However, sometimes you will want to make a listener take a higher priority than others, this
