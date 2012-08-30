@@ -111,7 +111,7 @@ layout: docs/current.twig
     All that is left now is to load our <em>Module</em>. Edit the <em>htdocs/index.php</em> file so that it looks lie the following:
   </p>
   <pre class="prettyprint">
-    require_once '/Users/thorpe/www/lib/proem/framework/lib/Proem/Autoloader.php';
+    require_once '../lib/Proem/Autoloader.php';
 
     (new Proem\Autoloader())
         ->attachNamespace('Module', '../lib')
