@@ -52,7 +52,7 @@ layout: docs/current.twig
     Next, we need to load our <em>Plugin</em>. Simple, open our <em>htdocs/index.php</em> file and edit it to look like:
   </p>
   <pre class="prettyprint">
-    require_once '/Users/thorpe/www/lib/proem/framework/lib/Proem/Autoloader.php';
+    require_once '../lib/Proem/Autoloader.php';
 
     (new Proem\Autoloader())
         ->attachNamespace('Module', '../lib')
