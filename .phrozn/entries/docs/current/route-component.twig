@@ -242,7 +242,7 @@ layout: docs/current.twig
     As an example, here is a simple one page app that displays "Hello World!" by default, or, if you go to /hello/somename it will display "Hello Somename!".
   </p>
   <pre class="prettyprint">
-    (new \Proem\Routing\Router\Standard(new \Proem\IO\Request\Http\Standard))->map(
+    (new \Proem\Routing\Router\Standard(new \Proem\IO\Request\Http\Standard))->attach(
         'default',
         new \Proem\Routing\Route\Standard([
             'rule'      => '/',
@@ -250,7 +250,7 @@ layout: docs/current.twig
                 echo 'Hello World!';
             }
         ])
-    )->map(
+    )->attach(
         'sayname',
         new \Proem\Routing\Route\Standard([
             'rule'      => '/hello/:name',
