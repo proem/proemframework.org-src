@@ -37,7 +37,7 @@ layout: docs/dev.twig
     Now, finally, install the latest stable version of Proem.
   </p>
   <code>
-    php composer.phar create-project proem/proem
+    php composer.phar create-project proem/proem proem dev-develop
   </code>
 </div>
 <div class="well">
@@ -120,7 +120,7 @@ layout: docs/dev.twig
     public function helloAction()
     {
         $this->assets->get('response')
-            ->appendToBody('Hello ' . $this->assets->get('response')->payload->name);
+            ->appendToBody('Hello ' . $this->assets->get('request')->payload->name);
     }
   </pre>
   <p>
