@@ -1,9 +1,9 @@
-    {% include 'layouts/header.twig' %}
+    {% include 'header.twig' %}
     <div class="docs container">
       <div class="row">
         <div class="span12">
-          {{ content }}
+          {% block content %}{% endblock %}
         </div>
       </div>
     </div>
-    {% include 'layouts/footer.twig' %}
+    {% include 'footer.twig' %}

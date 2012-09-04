@@ -36,7 +36,7 @@ h3 a:hover {
 }
 
 .proem-tree .hero-unit {
-  background-image: url(/media/img/banner-bg.png);
+  background-image: url(/assets/media/img/banner-bg.png);
 }
 
 .proem-tree .hero-unit {
@@ -62,7 +62,7 @@ h3 a:hover {
 
 .docs {
   min-height: 900px;
-  background: url(/media/img/big-tree.png) no-repeat fixed;
+  background: url(/assets/media/img/big-tree.png) no-repeat fixed;
   background-position: 25%;
 }
 
