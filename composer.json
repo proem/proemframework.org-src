@@ -1,5 +1,6 @@
 {
   "require": {
-    "trq/gen": "dev-master"
+    "trq/gen": "dev-master",
+    "jaz303/phake": "dev-master"
   }
 }
