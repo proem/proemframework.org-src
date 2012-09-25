@@ -12,6 +12,7 @@ class ProemExtension extends TwigExtension
             'docLink'       => new \Twig_Function_Method($this, 'docLink', ['is_safe' => ['html']]),
             'issueLink'     => new \Twig_Function_Method($this, 'issueLink', ['is_safe' => ['html']]),
             'apiLink'       => new \Twig_Function_Method($this, 'apiLink', ['is_safe' => ['html']]),
+            'disqus'        => new \Twig_Function_Method($this, 'disqus', ['is_safe' => ['html', 'javascript']]),
         );
     }
 
@@ -144,5 +145,20 @@ class ProemExtension extends TwigExtension
         }
 
         return "<a href=\"/api/{$context}/namespaces/{$class}.html\">{$title}</a>";
+    }
+
+    public function disqus($id)
+    {
+        return '
+            <div class="well" id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_identifier = "' . $id . '";
+                (function() {
+                    var dsq = document.createElement("script"); dsq.type = "text/javascript"; dsq.async = true;
+                    dsq.src = "http://" + disqus_shortname + ".disqus.com/embed.js";
+                    (document.getElementsByTagName("head")[0] || document.getElementsByTagName("body")[0]).appendChild(dsq);
+                })();
+            </script>
+        ';
     }
 }
