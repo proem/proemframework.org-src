@@ -1,0 +1,46 @@
+    {% include 'header.twig' %}
+    <div class="docs container">
+      <div class="row">
+        <div class="span3">
+          {% if docContext() == 'current' %}
+          <h5>Current Documentation</h5>
+          <p><small><em>HEAD of {{ hubLink(null, 'master branch', 'master') }}</em></small></p>
+          {% else %}
+          <h5>Development Documentation</h5>
+          <p><small><em>HEAD of {{ hubLink(null, 'develop branch', 'develop') }}</em></small></p>
+          {% endif %}
+          <div style="padding: 8px;" class="well">
+            <h5>An Overview</h5>
+            <ul class="nav nav-tabs nav-stacked">
+              <li>{{ docLink('installation') }}</li>
+              <li>{{ docLink('quickstart') }}</li>
+              <li>{{ docLink('bootstrap') }}</li>
+            </ul>
+          </div>
+          <div style="padding: 8px;" class="well">
+            <h5>The Components</h5>
+            <ul class="nav nav-tabs nav-stacked">
+              <li>{{ docLink('autoloader') }}</li>
+              <li>{{ docLink('route') }}</li>
+              <li>{{ docLink('signal') }}</li>
+              <li>{{ docLink('service') }}</li>
+              <li>{{ docLink('dispatch') }}</li>
+              <li>{{ docLink('filter') }}</li>
+              <li>{{ docLink('io') }}</li>
+            </ul>
+          </div>
+          <div style="padding: 8px;" class="well">
+            <h5>Userland Code</h5>
+            <ul class="nav nav-tabs nav-stacked">
+              <li>{{ docLink('controllers') }}</li>
+              <li>{{ docLink('modules') }}</li>
+              <li>{{ docLink('plugins') }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="span9">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+    {% include 'footer.twig' %}

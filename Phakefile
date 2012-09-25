@@ -12,9 +12,10 @@ task('build', function($args) {
         $dest = $args['dest'];
     }
 
-    require realpath(__DIR__) . '/vendor/trq/gen/lib/Gen.php';
+    require realpath(__DIR__) . '/vendor/autoload.php';
+
     $gen = new Gen\Gen($verbose);
-    $gen->build(realpath(__DIR__), $dest);
+    $gen->build(realpath(__DIR__));
 });
 
 desc('Serve website locally on 127.0.0.1:<8080>');

@@ -1,5 +1,5 @@
-layout: docs/dev.twig
----
+{% extends "docs_layout.twig" %}
+{% block content %}
 <div class="well">
   <h3>About Proem</h3>
   <p>
@@ -66,3 +66,4 @@ layout: docs/dev.twig
     If you find any bugs in the documentation, please report them at <a href="https://github.com/proem/proem/issues">https://github.com/proem/proem/issues</a>.
   </p>
 </div>
+{% endblock %}
