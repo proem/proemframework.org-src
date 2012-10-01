@@ -1,17 +1,15 @@
-layout: page.twig
----
+{% extends "page_layout.twig" %}
+{% block content %}
 <div class="well">
   <h3>Proem Development Blog</h3>
   <table class="table table-striped">
+    {% for blog in blogs %}
     <tr>
-      <td><a href="/blog/18-08-2012/documentation-updates.html">Major Updates to Documentation</a></td>
-      <td><a href="/blog/18-08-2012/documentation-updates.html#disqus_thread" data-disqus-identifier="/blog/18-08-2012/documentation-updates"></a></td>
-      <td><em>18th August 2012</em></td>
+      <td><a href="{{ blog.url }}">{{ blog.title|e }}</a></td>
+      <td><a href="{{ blog.url }}#disqus_thread" data-disqus-identifier="{{ blog.id }}"></a></td>
+      <td><em>{{ blog.date }}</em></td>
     </tr>
-    <tr>
-      <td><a href="/blog/25-08-2012/essential-framework-components.html">Essential Framework Components</a></td>
-      <td><a href="/blog/25-08-2012/essential-framework-components.html#disqus_thread" data-disqus-identifier="/blog/25-08-2012/essential-framework-components"></a></td>
-      <td><em>25th July 2012</em></td>
-    </tr>
+    {% endfor %}
   </table>
 </div>
+{% endblock %}

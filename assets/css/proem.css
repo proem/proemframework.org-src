@@ -92,3 +92,11 @@ pre.prettyprint {
   background-color: #F8F8FF;
   border: 1px solid #e1e1e1;
 }
+
+.gen-footer {
+  float: right;
+  font-size: 0.7em;
+  text-align: right;
+  margin-right: 12px;
+  color: #999;
+}
