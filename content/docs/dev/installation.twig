@@ -1,5 +1,5 @@
-layout: docs/dev.twig
----
+{% extends "docs_layout.twig" %}
+{% block content %}
 <div class="well">
   <h2>Installation</h2>
   <p>
@@ -51,7 +51,7 @@ layout: docs/dev.twig
       ->register();
   </pre>
   <p>
-    More information can be found in the <a href="/docs/dev/autoloader.html">Autoloader</a> docs.
+  More information can be found in the {{ docLink('autoloader', 'Autoloader') }} docs.
   </p>
 </div>
 <div class="well">
@@ -69,14 +69,5 @@ layout: docs/dev.twig
     RewriteRule ^(.*)$ index.php
   </pre>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/docs/dev/installation';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+{{ disqus('/docs/dev/installation') }}
+{% endblock %}

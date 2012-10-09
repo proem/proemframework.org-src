@@ -1,5 +1,5 @@
-layout: docs/dev.twig
----
+{% extends 'docs_layout.twig' %}
+{% block content %}
 <div class="well">
   <h2>The Bootstrap Process</h2>
   <p>
@@ -29,8 +29,8 @@ layout: docs/dev.twig
     (new \Proem\Proem)->init();
   </pre>
   <p>
-    However, that doesn't really help us much. Below, we are going to describe what exactly happens when you call Proem's <a href="/docs/dev/bootstrap.html#init">init()</a> method, and later
-    how you can attach code to <a href="/docs/dev/signals-component.html">Events</a> that will allow you to customise this process.
+    However, that doesn't really help us much. Below, we are going to describe what exactly happens when you call Proem's {{ docLink('bootstrap', 'init()', 'init') }} method, and later
+    how you can attach code to {{ docLink('signals', 'Events') }} that will allow you to customise this process.
   </p>
 </div>
 <div class="well">
@@ -56,12 +56,12 @@ layout: docs/dev.twig
     }
   </pre>
   <p>
-    Here Proem sets up a <a href="/docs/dev/signal-component.html">Signal Manager</a> and a <a href="/docs/services-component.html">Service Manager</a>.
-    (Asset is an alias of <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Service/Asset/Standard.php">\Proem\Service\Asset\Standard</a>).
+    Here Proem sets up a {{ docLink('signal', 'Signal Manager') }} and a {{ docLink('service', 'Service Manager') }}.
+    (Asset is an alias of {{ hubLink('Proem.Service.Asset.Standard') }}.
     These two objects form the heart of an application built on top of Proem and are passed around the entire bootstrap process and into userland <em>(your application)</em>.
   </p>
   <p>
-    So what else? Let's take a look at the actual <a href="/docs/dev/bootstrap.html#init">init()</a> method:
+    So what else? Let's take a look at the actual {{ docLink('bootstrap', 'init()', 'init') }} method:
   </p>
   <a name="init"></a>
   <pre class="prettyprint">
@@ -93,7 +93,7 @@ layout: docs/dev.twig
   </pre>
   <p>
     From this small snippet it is easy to see that <em>init()</em> stores some events within the Service Manager (these are added via <em><a href="#attach-events">attachEventListener</a></em>), it
-    then triggers a <em>Bootstrap</em> event named <em>proem.init</em> and creates a new <a href="/docs/dev/filter.html">Filter Manager</a>, passing it our <a href="/docs/dev/services-component.html">Service Manager</a> instance.
+    then triggers a <em>Bootstrap</em> event named <em>proem.init</em> and creates a new {{ docLink('filter', 'Filter Manager') }}, passing it our {{ docLink('service', 'Service Manager') }} instance.
   </p>
   <p>
     So WTF is this <em>Filter Manager</em>?
@@ -177,13 +177,12 @@ layout: docs/dev.twig
     <li>Dispatch</li>
   </ul>
   <p>
-    As the names suggest, these Events are responsible for setting up the <a href="/docs/dev/io.html#request">Request</a>, <a href="/docs/dev/io.html#response">Response</a>, <a href="/docs/dev/route-component.html">Routing</a>
-    and <a href="/docs/dev/dispatch.html">Dispatch</a> parts of the framework.
+    As the names suggest, these Events are responsible for setting up the {{ docLink('io', 'Request') }}, {{ docLink('io', 'Response', 'response') }} {{ docLink('route', 'Routing') }}
+    and {{ docLink('dispatch', 'Dispatch') }} parts of the framework.
   </p>
   <p>
-    Each of these events extend the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Filter/Event/Generic.php">Proem\Filter\Event\Generic</a> object
-    which is as I said little more robust (along with the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Filter/Manager/Standard.php">Filter Manager</a> <em>(Chain)</em>) than
-    the simple example shown above.
+    Each of these events extend the {{ hubLink('Proem.Filter.Event.Generic') }} object which is as I said little more robust (along with the {{ hubLink('Proem.Filter.Manager.Standard') }}
+    <em>(Chain)</em>) than the simple example shown above.
   </p>
   <p>
     One of the differences is that each of these <em>Filter Events</em> has it's own <strong>in</strong>Bound and <strong>out</strong>Bound methods.
@@ -201,33 +200,32 @@ layout: docs/dev.twig
   <h3>How can we customise this process?</h3>
   <p>
     So now we have an understanding of what happens when we call <em>(new Proem\Proem)->init()</em>, but how can we customise this process? If you look again
-    at the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Filter/Event/Generic.php">Proem\Filter\Event\Generic</a> abstract you will notice
-    <strong>pre*</strong> and <strong>post*</strong> methods surround the <strong>inBound</strong> and <strong>outBound</strong> methods. These pre / post methods
-    are responsible for publishing <a href="/docs/dev/signal-component.html">Events</a> which we can listen to in order to customise the bootstrap process.
+    at the {{ hubLink('Proem.Filter.Event.Generic') }} abstract you will notice <strong>pre*</strong> and <strong>post*</strong> methods surround the <strong>inBound</strong>
+    and <strong>outBound</strong> methods. These pre / post methods are responsible for publishing {{ docLink('signal', 'Events') }} which we can listen to in order to customise the bootstrap process.
   </p>
   <p>
-    This means that the Chain can potentially publish 16 different events that we can listen to using the <a href="/docs/dev/signal-component.html">Signals</a> component. On top of that, there is
+    This means that the Chain can potentially publish 16 different events that we can listen to using the {{ docLink('signal') }}. On top of that, there is
     the initial "proem.init" event (which we can also see within the <a href="#init">init()</a> code) and some of these events themselves have the potential to again trigger more events
-    <em>(the <a href="/docs/dev/dispatch.html">dispatch stage</a> comes to mind)</em>. The main Events triggered here are:
+    <em>(the {{ docLink('dispatch', 'dispatch stage') }} comes to mind)</em>. The main Events triggered here are:
   </p>
   <ul>
     <li>proem.init</li>
-    <li>pre.in.response</li>
-    <li>post.in.response</li>
-    <li>pre.in.request</li>
-    <li>post.in.request</li>
-    <li>pre.in.router</li>
-    <li>post.in.router</li>
-    <li>pre.in.dispatch</li>
-    <li>post.in.dispatch</li>
-    <li>pre.out.dispatch</li>
-    <li>post.out.dispatch</li>
-    <li>pre.out.route</li>
-    <li>post.out.route</li>
-    <li>pre.out.request</li>
-    <li>post.out.request</li>
-    <li>pre.out.response</li>
-    <li>post.out.response</li>
+    <li>proem.pre.in.response</li>
+    <li>proem.post.in.response</li>
+    <li>proem.pre.in.request</li>
+    <li>proem.post.in.request</li>
+    <li>proem.pre.in.router</li>
+    <li>proem.post.in.router</li>
+    <li>proem.pre.in.dispatch</li>
+    <li>proem.post.in.dispatch</li>
+    <li>proem.pre.out.dispatch</li>
+    <li>proem.post.out.dispatch</li>
+    <li>proem.pre.out.router</li>
+    <li>proem.post.out.router</li>
+    <li>proem.pre.out.request</li>
+    <li>proem.post.out.request</li>
+    <li>proem.pre.out.response</li>
+    <li>proem.post.out.response</li>
   </ul>
   <div class="alert alert-info">
     As of 0.6.0 the first thing the Signal Manager does with an Event is checks to see if there are any listeners, if there are no listeners, the Signal Manager does nothing. This
@@ -245,10 +243,10 @@ layout: docs/dev.twig
   <p>
 </div>
 <div class="well">
-  <a name="attach-events"></a>
+  {{ anchor('attach-events') }}
   <h3>A simple example, adding a <em>Route</em> to the <em>Router</em></h3>
   <pre class="prettyprint">
-    (new \Proem\Proem)->attachEventListener('proem.post.in.route', function($event) {
+    (new \Proem\Proem)->attachEventListener('proem.post.in.router', function($event) {
         $event->getServiceManager()->get('router')->attach(
             'logout', new \Proem\Routing\Route\Standard([
                 'rule'      => '/logout',
@@ -259,22 +257,19 @@ layout: docs/dev.twig
   </pre>
   <p>
     In this example we can see that the <em>Proem</em> object provides an <em>attachEventListener()</em> method. This method proxies through and attaches listeners
-    to the main <a href="/docs/dev/signal-component.html">Signal Manager</a> that is passed around the framework.
+    to the main {{ docLink('signal', 'Signal Manager') }} that is passed around the framework.
   </p>
   <p>
-    All Events triggered directly from the Bootstrap Filter Chain are instances of the custom
-    <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Bootstrap/Signal/Event/Bootstrap.php">Bootstrap Signal Event</a> which provides a few extra methods
-    that are specific to the bootstrap process. <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Bootstrap/Signal/Event/Bootstrap.php#L67">getServiceManager()</a> is
-    one such method and provides us access to the Services that have been set up.
+    All Events triggered directly from the Bootstrap Filter Chain are instances of the custom {{ hubLink('Proem.Bootstrap.Signal.Event.Bootstrap') }} event which provides a few extra methods
+    that are specific to the bootstrap process.
   </p>
   <p>
     Because we are listening for the <strong>post.in.route</strong> event, the router already exists and is within the <em>Service Manager</em> ready for us to customise. A general rule of thumb
     is that default implementations of objects are added during the inBound() filter Events. These can be overridden completely by sending your own implementation as a response to the applicable
-    pre.in.* Event, or can be configured by listening to and responding to the applicable post.in.*
+    proem.pre.in.* Event, or can be configured by listening to and responding to the applicable proem.post.in.*
   </p>
   <p>
-    But what if we don't want to use the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Routing/Router/Standard.php">Standard Router</a>? Using the <em>Events</em> provided
-    we can overload it on the fly.
+    But what if we don't want to use the {{ hubLink('Proem.Routing.Router.Standard', 'Standard Router') }}? Using the <em>Events</em> provided we can overload it on the fly.
   </p>
 </div>
 <div class="well">
@@ -284,8 +279,8 @@ layout: docs/dev.twig
     going to provide us with by default? Easy.
   <p>
   <p>
-    The <em>Router</em> is created within the Router Filter Chain Event <em>inBound()</em>. All we need do is listen for the <strong>pre.in.route</strong> event and from within our listener, return a
-    new <em>Router</em> wrapped within a <a href="/docs/dev/services-component.html">Service Asset Container</a> (Being sure to pass it a valid url to it's constructor).
+    The <em>Router</em> is created within the Router Filter Chain Event <em>inBound()</em>. All we need do is listen for the <strong>proem.pre.in.route</strong> event and from within our listener, return a
+    new <em>Router</em> wrapped within a {{ docLink('service', 'Service Asset Container') }} (Being sure to pass it a valid url to it's constructor).
   </p>
   <pre class="prettyprint">
     namespace MyApp;
@@ -298,29 +293,12 @@ layout: docs/dev.twig
         }
     }
 
-    (new \Proem\Proem)->attachEventListener('pre.in.route', function($e) {
+    (new \Proem\Proem)->attachEventListener('proem.pre.in.route', function($e) {
         return (new \Proem\Service\Asset\Generic)->set('MyApp\Router', function() use ($e) {
             return new MyApp\Router($e->getServiceManager()->get('request')->getBaseUri());
         });
     })->init();
   </pre>
-</div>
-<div class="well">
-  <h3>So what Events do what?</h3>
-  <p>
-    I'm a little hesitant to document this at this early stage. It's safe to say however that any if the pre.in.* event's will accept a listener
-    that can return an <em>Asset</em> holding a <em>Service</em>. Eg; The <em>pre.in.request</em> Event could return an implementation of the
-    <a href="https://github.com/proem/proem/blob/develop/lib/Proem/IO/Request/Template.php">Request Template</a>. The following inBound()
-    <em>Chain Event</em> will then use this to populate the <em>Service Manager</em> instead of creating it's default.
-  </p>
-  <p>
-    The waters get a bit more unclear when we start dealing with the <em>Response</em> object which is set up on the inBound() <em>Chain Event</em> but will actually
-    also do some work on the way <em>out</em> of the chain.
-  </p>
-  <p>
-    For instance, if you take a look at the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Bootstrap/Filter/Event/Response.php#L136">outBound</a>
-    method on the <em>Response Filter Event</em> you can see that this is used to send any response to the client.
-  </p>
 </div>
 <div class="well">
   <h3>Summary</h3>
@@ -330,17 +308,8 @@ layout: docs/dev.twig
   </p>
   <p>
     I can also hear people screaming that "by the time I listen for all these events my bootstrap is going to be a mess!". While this might look like the case, once you start
-    looking at <a href="/docs/dev/modules.html">Modules</a> and <a href="/docs/dev/plugins.html">Plugins</a> you will see that there are ways around this as well.
+    looking at {{ docLink('modules') }} and {{ docLink('plugins') }} you will see that there are ways around this as well.
   </p>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/docs/dev/bootstrap';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+{{ disqus('/docs/dev/bootstrap') }}
+{% endblock %}

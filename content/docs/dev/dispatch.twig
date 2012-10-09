@@ -1,5 +1,5 @@
-layout: docs/dev.twig
----
+{% extends 'docs_layout.twig' %}
+{% block content %}
 <div class="well">
   <h3>The Dispatch Component</h3>
   <p>
@@ -123,14 +123,5 @@ layout: docs/dev.twig
     Attaching your own listener to the <em>proem.route.exhausted</em> event this page can easily be customised to your requirements.
   </p>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/docs/dev/dispatch';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+{{ disqus('/docs/dev/dispatch-component') }}
+{% endblock %}

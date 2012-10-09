@@ -1,16 +1,16 @@
-layout: docs/dev.twig
----
+{% extends 'docs_layout.twig' %}
+{% block content %}
 <div class="well">
   <h3>Controllers</h3>
   <p>
-    Controllers are the heart of userland code. They are simple classes that have there methods (<em>actions</em>) mapped to be the <a href="/docs/dev/route-component.html">Routing</a>. Typically this means a
+    Controllers are the heart of userland code. They are simple classes that have there methods (<em>actions</em>) mapped to be the {{ docLink('route', 'Routing') }}. Typically this means a
     url such as /hello will map to your <em>Index</em> Controller's <em>helloAction()</em> method.
   </p>
 </div>
 <div class="well">
   <h3>Creating a controller</h3>
   <p>
-    Controllers are simple to create. Within Proem, all controllers extend the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Controller/Standard.php">Proem\Controller\Standard</a> object.
+    Controllers are simple to create. Within Proem, all controllers extend the {{ hubLink('Proem.Controller.Standard') }} object.
   </p>
   <pre class="prettyprint">
     class Index extends Proem\Controller\Standard
@@ -22,8 +22,8 @@ layout: docs/dev.twig
     }
   </pre>
   <p>
-    Controllers are automatically passed Proem's <a href="/docs/dev/services-component.html">Service Manager</a> which can be accessed via the property <em>$this->assets</em> and by default contains
-    the <em>Request, Response, Dispatch</em> and <em>Router</em> objects as well as the <a href="/docs/dev/signal-component.html">Signal Manager</a>.
+    Controllers are automatically passed Proem's {{ docLink('services', 'Service Manager') }} which can be accessed via the property <em>$this->assets</em> and by default contains
+    the <em>Request, Response, Dispatch</em> and <em>Router</em> objects as well as the {{ docLink('signals', 'Signal Manager') }}.
   </p>
   <pre class="prettyprint">
     class Index extends Proem\Controller\Standard
@@ -56,7 +56,7 @@ layout: docs/dev.twig
     }
   </pre>
   <p>
-    There are also two <a href="/docs/dev/signal-component.html">events</a> triggered when an action is called. The <em>proem.pre.action.&lt;actionname&gt;</em> and <em>proem.post.action.&lt;actioname&gt;</em> events. Where the
+    There are also two {{ docLink('events', 'events') }} triggered when an action is called. The <em>proem.pre.action.&lt;actionname&gt;</em> and <em>proem.post.action.&lt;actioname&gt;</em> events. Where the
     &lt;actionname&gt; is the <em>action</em> being called. You can setup listeners for these events wherever you like, however, you might often setup these listeners within the actual controller itself.
   </p>
   <pre class="prettyprint">
@@ -76,7 +76,7 @@ layout: docs/dev.twig
     }
   </pre>
   <p>
-    If you want to have common code setup for all actions, just use <a href="/docs/dev/signal-component.html#wildcards">wilcard notation</a>.
+    If you want to have common code setup for all actions, just use {{ docLink('signals', 'wildcard notation', 'wildcards') }}.
   </p>
   <pre class="prettyprint">
     class Index extends Proem\Controller\Standard
@@ -95,14 +95,5 @@ layout: docs/dev.twig
     }
   </pre>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/docs/dev/controllers';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+{{ disqus('/docs/dev/controllers') }}
+{% endblock %}

@@ -1,9 +1,9 @@
-layout: docs/dev.twig
----
+{% extends 'docs_layout.twig' %}
+{% block content %}
 <div class="well">
   <h3>The Filter Chain</h3>
   <p>
-    The <em>Filter Chain Component</em> sits at the heart of Proem's <a href="/docs/dev/bootstrap.html">Bootsrap Process</a> and is used to easily flow through the logic required to setup and
+    The <em>Filter Chain Component</em> sits at the heart of Proem's {{ docLink('bootstrap', 'Bootsrap Process') }} and is used to easily flow through the logic required to setup and
     configure the other components within Proem. The <em>Filter Chain</em> itself is a fairly simple implementation of the
     <a href="http://java.sun.com/blueprints/corej2eepatterns/Patterns/InterceptingFilter.html">Filter Chain Pattern</a>, which really, is just a simple mechanism for executing a series of methods
     which are passed the same data to operate on.
@@ -68,8 +68,7 @@ layout: docs/dev.twig
   <p>
   <div class="alert alert-error">
     <p>
-      Looking at the code while writing this documentation I can see that the dependency on the <em>Service Manager</em> needs to be better implemented or removed all together.
-      As of > 0.6.1, a <a href="https://github.com/proem/proem/issues/108">ticket has been created</a> to look at this issue.
+      Looking at the code while writing this documentation I can see that the dependency on the <em>Service Manager</em> needs to be better implemented or removed all together. See {{ issueLink(108) }}
     </p>
   </div>
   <pre>
@@ -98,14 +97,5 @@ layout: docs/dev.twig
     event2 outBound
   </pre>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/docs/dev/filter';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+{{ disqus('/docs/dev/filter') }}
+{% endblock %}
