@@ -10,9 +10,11 @@ class ProemExtension extends TwigExtension
             'docContext'    => new \Twig_Function_Method($this, 'docContext'),
             'hubLink'       => new \Twig_Function_Method($this, 'hubLink', ['is_safe' => ['html']]),
             'docLink'       => new \Twig_Function_Method($this, 'docLink', ['is_safe' => ['html']]),
+            'phpLink'       => new \Twig_Function_Method($this, 'phpLink', ['is_safe' => ['html']]),
             'issueLink'     => new \Twig_Function_Method($this, 'issueLink', ['is_safe' => ['html']]),
             'apiLink'       => new \Twig_Function_Method($this, 'apiLink', ['is_safe' => ['html']]),
             'disqus'        => new \Twig_Function_Method($this, 'disqus', ['is_safe' => ['html', 'javascript']]),
+            'anchor'        => new \Twig_Function_Method($this, 'anchor', ['is_safe' => ['html', 'javascript']]),
         );
     }
 
@@ -48,7 +50,7 @@ class ProemExtension extends TwigExtension
         }
 
         if ($file !== null) {
-            $file = '/' . str_replace('.', '/', $file) . '.php';
+            $file = '/lib/' . str_replace('.', '/', $file) . '.php';
         } else {
             $file = '';
         }
@@ -73,21 +75,32 @@ class ProemExtension extends TwigExtension
                     $t = 'Autoloader';
                     break;
                 case 'route':
+                case 'router':
+                case 'route-component':
                     $t = 'Routing Component';
                     $page = 'route-component';
                     break;
                 case 'signal':
+                case 'signals':
+                case 'events':
+                case 'event':
+                case 'signal-component':
                     $t = 'Signal Component';
                     $page = 'signal-component';
                     break;
                 case 'service':
+                case 'services':
+                case 'service-component':
+                case 'di':
                     $t = 'Service Component';
                     $page = 'services-component';
                     break;
                 case 'dispatch':
+                case 'dispatcher':
                     $t = 'Dispatch Component';
                     break;
                 case 'filter':
+                case 'filter-component':
                     $t = 'The Filter Component';
                     break;
                 case 'io':
@@ -125,6 +138,15 @@ class ProemExtension extends TwigExtension
         return "<a href=\"/docs/{$context}{$page}{$anchor}\">{$title}</a>";
     }
 
+    public function phpLink($function, $title = null)
+    {
+        if ($title === null) {
+            return "<a href=\"http://php.net/{$funtion}\">{$function}</a>";
+        } else {
+            return "<a href=\"http://php.net/{$funtion}\">{$title}</a>";
+        }
+    }
+
     public function issueLink($issue = null)
     {
         if ($issue === null) {
@@ -160,5 +182,11 @@ class ProemExtension extends TwigExtension
                 })();
             </script>
         ';
+    }
+
+    public function anchor($name)
+    {
+        // Fix so that anchors don't scroll off the top of the page.
+        return  "<a name=\"{$name}\" style=\"position: relative; top: -80px\">&nbsp;</a>";
     }
 }
