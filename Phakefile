@@ -2,11 +2,6 @@
 
 desc('Build website');
 task('build', function($args) {
-    $verbose = false;
-    if (isset($args['verbose'])) {
-        $verbose = true;
-    }
-
     $dest = realpath(__DIR__) . '/build';
     if (isset($args['dest'])) {
         $dest = $args['dest'];
@@ -14,8 +9,8 @@ task('build', function($args) {
 
     require realpath(__DIR__) . '/vendor/autoload.php';
 
-    $gen = new Gen\Gen($verbose);
-    $gen->build(realpath(__DIR__));
+    $gen = new Gen\Builder(new Gen\Config, new Gen\Util(isset($args['verbose'])));
+    $gen->build(realpath(__DIR__), $dest);
 });
 
 desc('Serve website locally on 127.0.0.1:<8080>');
