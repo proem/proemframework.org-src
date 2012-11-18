@@ -11,23 +11,13 @@
   <p>
     An <em>Event</em> will typically pass along to the <em>Listener</em> some basic meta data such as where, when and how the
     <em>Event</em> was triggered. The <em>Listener</em> can then use this meta data to perform some task. In Proem, if the <em>Listener</em>
-    also returns any value, this data will be passed back to the <em>Event</em> and (if defined) will trigger a callback on the <em>Event</em>.
+    also returns an <em>Event</em> object, this object will be passed back to the original location where the event was triggered and (if defined)
+    will trigger a callback on the <em>Event</em>.
   </p>
   <p>
-    This design allows great flexibility as <em>Listeners</em> are very loosely coupled from the application while still being able to
+    This design allows for great flexibility as <em>Listeners</em> are very loosely coupled from the application while still being able to
     communicate and trigger events on the application themselves.
   </p>
-  <!-- <div class="well">
-    <h3>Table of Contents</h3>
-    <ul class="nav nav-tabs nav-stacked">
-      <li><a href="#a-simple-example">A Simple Example</a></li>
-      <li><a href="#attaching-multiple-listeners">Attaching multiple listeners to a single event</a></li>
-      <li><a href="#wildcards">Attaching listeners using wildcard notation</a></li>
-      <li><a href="#prioritising-listeners">Prioritising the order in which <em>Listeners</em> are called</a></li>
-      <li><a href="#custom-events">Creating and using Custom Events</a></li>
-      <li><a href="#event-responses">Triggering an Event Response</a></li>
-    </ul>
-  </div>-->
 </div>
 <div class="well">
   <a name="a-simple-example" style="position: relative; top: -70px;">&nbsp;</a>
@@ -52,8 +42,8 @@
     }
   </pre>
   <p>
-    As you can see, the <em>Event</em> object triggered gets sent to the <em>Listener</em> and is passed into the first argument of it's Callback. We can also use this <em>Event</em> object to pass along
-    extra parameters:
+    As you can see, the <em>Event</em> object triggered gets sent to the <em>Listener</em> and is passed into the first argument of it's Callback. We can also
+    use this <em>Event</em> object to pass along extra parameters:
   </p>
   <pre class="prettyprint">
     $signal_manager = new Proem\Signal\Manager\Standard;
@@ -130,8 +120,8 @@
   {{ anchor('prioritising-listeners') }}
   <h3>Prioritising the order in which <em>Listeners</em> are called.</h3>
   <p>
-    Left alone listeners will be executed in the order that they are attached to an event, FIFO. However, sometimes you will want to make a listener take a higher priority than others, this
-    can be done by passing the priority as the last argument to the <em>Event Manager's - attach()</em> method.
+    Left alone listeners will be executed in the order that they are attached to an event, FIFO. However, sometimes you will want to make a
+    listener take a higher priority than others, this can be done by passing the priority as the last argument to the <em>Event Manager's - attach()</em> method.
   </p>
   <pre class="prettyprint">
     $signal_manager = new Proem\Signal\Manager\Standard;
@@ -200,30 +190,38 @@
   {{ anchor('event-responses') }}
   <h3>Triggering an Event Response</h3>
   <p>
-    The above examples are all well and good, but often, we will want our listeners to trigger some action back at the location where our original <em>Event</em> was triggered. This is easily
-    achieved by defining a <em>Callback</em> and passing it as the second argument to the <em>trigger()</em> method. All we need do then is return <strong>any</strong> <em>true</em> value
-    from our <em>Listener</em>.
+    The above examples are all well and good, but often, we will want our listeners to trigger some action back at the location where our
+    original <em>Event</em> was triggered. This is easily achieved by defining a <em>Callback</em> and passing it as the second argument
+    to the <em>trigger()</em> method. All we need do then is return an <em>Event</em> from our listener. This can be the original <em>Event</em>
+    or an entirely new <em>Event</em>.
   </p>
   <pre class="prettyprint">
     $signal_manager = new Proem\Signal\Manager\Standard;
 
-    $signal_manager->attach('foo.something', function() {
-        return "Hello from a listener";
+    $signal_manager->attach('foo.something', function($event) {
+        return $event;
     });
 
-    $signal_manager->trigger('foo.something', function($response) {
-        echo $response;
+    $signal_manager->trigger('foo.something', function($responseEvent) {
+        echo "A response event was returned";
     });
   </pre>
   <p>
-    Of course, this is a pretty trivial example, but it does describe how data can be returned back to where our <em>Event</em> was first triggered. This concept gives <em>Events</em> an awesome amount
-    of flexibility and makes them extremely useful within both the framework and applications built on top of it. It's almost like a means of communication. Where one a piece of code can communicate
-    with another and that second piece of code can communicate back.
+    Of course, this is a pretty trivial example, but it does describe (in simple terms) how an Event can be returned back to where our original triggering <em>Event</em>
+    was first triggered. In most cases however, we would also want to pass some data back along with this event. This is done by simply attaching the data to the
+    <em>Event</em> as you would normally.
   </p>
-  <div class="alert alert-info">
-    There is currently a ticket ({{ issueLink(107) }}) describing a slight change in the above functionality. With this change in place, you will be required to pass an
-    object implementing the Proem\Signal\Event\Template interface back to the place an event was triggered instead of any <em>true</em> value.
-  </div>
+  <pre class="prettyprint">
+    $signal_manager = new Proem\Signal\Manager\Standard;
+
+    $signal_manager->attach('foo.something', function($event) {
+        $event->setParam('some-data', 'This is some data that has been set in a listener');
+    });
+
+    $signal_manager->trigger('foo.something', function($responseEvent) {
+        echo $responseEvent->getParam('some-data');
+    });
+  </pre>
 </div>
 {{ disqus('/docs/dev/signal-component') }}
 {% endblock %}
