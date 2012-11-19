@@ -25,24 +25,33 @@
 <div class="well">
   <h3>A simple example</h3>
   <pre class="prettyprint">
-    require_once './lib/Proem/Autoloader.php';
+    require_once './lib/Proem/Util/Autoloader.php';
 
-    (new \Proem\AutoLoader)
+    (new \Proem\Util\AutoLoader)
         ->register();
   </pre>
   <div class="alert alert-info">
-    Note that you first must manually include the {{ hubLink('Proem.Autoloader') }} file itself. Once this is done, you will no longer need any calls to include or require within your
-    code and Proem is included by default. See {{ issueLink(124) }}.
+    Note that you first must manually include the {{ hubLink('Proem.Util.Autoloader') }} file itself. Once this is done, you will no longer need any calls to include or require within your
+    code and Proem is included by default.
   </div>
 </div>
 <div class="well">
   <h3>Attaching namespaces</h3>
-  <p>The Proem autloader expects namespaces mapped to the paths these can be found in:</p>
+  <p>The Proem autloader expects namespaces mapped to the paths these namespaces can be found within (or more commonly, there parent directory):</p>
   <pre class="prettyprint">
-    (new \Proem\AutoLoader)
+    (new \Proem\Util\AutoLoader)
         ->attachNamespace([
             'Foo' => '/myfoo'
-        ]);
+    ]);
+  </pre>
+  <div class="alert alert-info">
+    As of {{ commitLink('f3d110d') }} the following will also now work.
+  </div>
+  <pre class="prettyprint">
+    (new \Proem\Util\AutoLoader)
+        ->attachNamespace([
+            'Foo' => '/myfoo/Foo'
+    ]);
   </pre>
 </div>
 <div class="well">

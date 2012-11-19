@@ -8,6 +8,7 @@ class ProemExtension extends ExtensionBase
     {
         return array(
             'docContext'    => new \Twig_Function_Method($this, 'docContext'),
+            'commitLink'    => new \Twig_Function_Method($this, 'commitLink', ['is_safe' => ['html']]),
             'hubLink'       => new \Twig_Function_Method($this, 'hubLink', ['is_safe' => ['html']]),
             'docLink'       => new \Twig_Function_Method($this, 'docLink', ['is_safe' => ['html']]),
             'phpLink'       => new \Twig_Function_Method($this, 'phpLink', ['is_safe' => ['html']]),
@@ -29,6 +30,10 @@ class ProemExtension extends ExtensionBase
             return 'dev';
         }
         return 'current';
+    }
+
+    public function commitLink($commit) {
+        return "<a href=\"https://github.com/proem/proem/{$commit}\">$commit</a>";
     }
 
     public function hubLink($file = null, $title = null, $branch = null)
