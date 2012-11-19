@@ -1,8 +1,15 @@
 <?php
 
+if (file_exists(__DIR__ . '/config.php')) {
+    $conf = (array) include __DIR__ . '/config.php';
+}
+
 desc('Build website');
-task('build', function($args) {
-    $dest = realpath(__DIR__) . '/build';
+task('build', function($args) use ($conf) {
+    $dest = __DIR__ . '/build';
+    if (isset($conf['dest'])) {
+        $dest = $conf['dest'];
+    }
     if (isset($args['dest'])) {
         $dest = $args['dest'];
     }
@@ -14,26 +21,69 @@ task('build', function($args) {
 });
 
 desc('Serve website locally on 127.0.0.1:<8080>');
-task('serve', 'build', 'api', function($args) {
+task('serve', 'build', 'api', function($args) use ($conf) {
     $port = '8080';
+    if (isset($conf['server']['port'])) {
+        $port = $conf['server']['port'];
+    }
     if (isset($args['port'])) {
         $port = $args['port'];
     }
 
-    if (is_dir(realpath(__DIR__) . '/build')) {
-        echo "http://127.0.0.1:$port\n";
-        chdir(realpath(__DIR__) . '/build');
-        system('php -S 127.0.0.1:' . $port);
+    $host = '127.0.0.1';
+    if (isset($conf['server']['host'])) {
+        $host = $conf['server']['host'];
+    }
+    if (isset($args['host'])) {
+        $host = $args['host'];
+    }
+
+    $dest = __DIR__ . '/build';
+    if (isset($conf['dest'])) {
+        $dest = $conf['dest'];
+    }
+    if (isset($args['dest'])) {
+        $dest = $args['dest'];
+    }
+
+    if (is_dir($dest)) {
+        echo "\nhttp://{$host}:{$port}\n";
+        chdir($dest);
+        system('php -S ' . $host . ':' . $port);
     }
 });
 
 desc('Build api docs');
-task('api', 'build', function() {
-    system('mkdir -p build/api/{current,dev}');
-    system('cd ~/src/proem && git checkout master');
-    system('phpdoc run --template=proem -d ~/src/proem/lib -t build/api/current');
-    system('cd ~/src/proem && git checkout develop');
-    system('phpdoc run --template=proem -d ~/src/proem/lib -t build/api/dev');
+task('api', 'build', function($args) use ($conf) {
+    $dest = __DIR__ . '/build';
+    if (isset($conf['dest'])) {
+        $dest = $conf['dest'];
+    }
+    if (isset($args['dest'])) {
+        $dest = $args['dest'];
+    }
+
+    $src = '~/src/proem';
+    if (isset($conf['src'])) {
+        $src = $conf['src'];
+    }
+    if (isset($args['src'])) {
+        $src = $args['src'];
+    }
+
+    $phpdoc = '/usr/local/bin/phpdoc';
+    if (isset($conf['phpdoc'])) {
+        $phpdoc = $conf['phpdoc'];
+    }
+    if (isset($args['phpdoc'])) {
+        $phpdoc = $args['phpdoc'];
+    }
+
+    system('mkdir -p ' . $dest . '/api/{current,dev}');
+    system('cd ' . $src . ' && git checkout master');
+    system($phpdoc . ' run --template=proem -d ' . $src . '/lib -t ' . $dest . '/api/current');
+    system('cd ' . $src . ' && git checkout develop');
+    system($phpdoc . ' run --template=proem -d ' . $src . '/lib -t ' . $dest . '/api/dev');
 });
 
 task('default', 'build');
