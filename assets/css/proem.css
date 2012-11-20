@@ -95,8 +95,12 @@ pre.prettyprint {
 
 .gen-footer {
   float: right;
-  font-size: 0.7em;
+  font-size: 0.8em;
   text-align: right;
   margin-right: 12px;
+  color: #999;
+}
+
+em {
   color: #999;
 }

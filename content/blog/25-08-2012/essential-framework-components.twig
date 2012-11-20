@@ -1,5 +1,5 @@
-layout: page.twig
----
+{% extends "page_layout.twig" %}
+{% block content %}
 <div class="well">
   <h3>Essential Framework Components?</h3>
   <p>
@@ -24,14 +24,5 @@ layout: page.twig
     ship with the framework out of the box. Thoughts?
   </p>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/blog/18-07-2012/essential-framework-components';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+{{ disqus('/blog/18-07-2012/essential-framework-components') }}
+{% endblock %}

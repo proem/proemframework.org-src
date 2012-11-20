@@ -7,7 +7,8 @@
     <tr>
       <td><a href="{{ blog.url }}">{{ blog.title|e }}</a></td>
       <td><a href="{{ blog.url }}#disqus_thread" data-disqus-identifier="{{ blog.id }}"></a></td>
-      <td><em>{{ blog.date }}</em></td>
+      <td><em>({{ blog.meta.categories|sort|join(', ') }})</em></td>
+      <td><em>{{ blog.meta.date }}</em></td>
     </tr>
     {% endfor %}
   </table>
