@@ -4,8 +4,33 @@ if (file_exists(__DIR__ . '/config.php')) {
     $conf = (array) include __DIR__ . '/config.php';
 }
 
-desc('Build website');
-task('build', function($args) use ($conf) {
+desc('Build all');
+task('build', 'gen', 'api', 'downloads');
+
+desc('Make sure downloads are in place.');
+task('downloads', function($args) use ($conf) {
+    $dest = __DIR__ . '/build';
+    if (isset($conf['dest'])) {
+        $dest = $conf['dest'];
+    }
+    if (isset($args['dest'])) {
+        $dest = $args['dest'];
+    }
+
+    $src = '~/src/proem';
+    if (isset($conf['src'])) {
+        $src = $conf['src'];
+    }
+    if (isset($args['src'])) {
+        $src = $args['src'];
+    }
+
+    system("cd $src && ./vendor/bin/phake dev:build");
+    system("mkdir -p $dest/downloads && cp $src/build/proem.phar $dest/downloads/proem.phar");
+});
+
+desc('Generate website');
+task('gen', function($args) use ($conf) {
     $dest = __DIR__ . '/build';
     if (isset($conf['dest'])) {
         $dest = $conf['dest'];
@@ -21,7 +46,7 @@ task('build', function($args) use ($conf) {
 });
 
 desc('Serve website locally on 127.0.0.1:<8080>');
-task('serve', 'build', 'api', function($args) use ($conf) {
+task('serve', 'build', function($args) use ($conf) {
     $port = '8080';
     if (isset($conf['server']['port'])) {
         $port = $conf['server']['port'];
@@ -54,7 +79,7 @@ task('serve', 'build', 'api', function($args) use ($conf) {
 });
 
 desc('Build api docs');
-task('api', 'build', function($args) use ($conf) {
+task('api', 'gen', function($args) use ($conf) {
     $dest = __DIR__ . '/build';
     if (isset($conf['dest'])) {
         $dest = $conf['dest'];
