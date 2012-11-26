@@ -264,9 +264,9 @@
     that are specific to the bootstrap process.
   </p>
   <p>
-    Because we are listening for the <strong>post.in.route</strong> event, the router already exists and is within the <em>Service Manager</em> ready for us to customise. A general rule of thumb
+    Because we are listening for the <strong>proem.post.in.route</strong> event, the router already exists and is within the <em>Service Manager</em> ready for us to customise. A general rule of thumb
     is that default implementations of objects are added during the inBound() filter Events. These can be overridden completely by sending your own implementation as a response to the applicable
-    proem.pre.in.* Event, or can be configured by listening to and responding to the applicable proem.post.in.*
+    proem.pre.in.* Event (see {{ docLink('signals', 'The Signal Component', 'event-responses') }}, or can be configured by listening to and responding to the applicable proem.post.in.*
   </p>
   <p>
     But what if we don't want to use the {{ hubLink('Proem.Routing.Router.Standard', 'Standard Router') }}? Using the <em>Events</em> provided we can overload it on the fly.
@@ -279,8 +279,8 @@
     going to provide us with by default? Easy.
   <p>
   <p>
-    The <em>Router</em> is created within the Router Filter Chain Event <em>inBound()</em>. All we need do is listen for the <strong>proem.pre.in.route</strong> event and from within our listener, return a
-    new <em>Router</em> wrapped within a {{ docLink('service', 'Service Asset Container') }} (Being sure to pass it a valid url to it's constructor).
+    The <em>Router</em> is created within the Router Filter Chain Event <em>inBound()</em>. All we need do is listen for the <strong>proem.pre.in.route</strong> event and from within our listener, return an
+    event with the 'router.asset' parameter set to our new <em>Router</em> wrapped within a {{ docLink('service', 'Service Asset Container') }} (Being sure to pass it a valid url to it's constructor).
   </p>
   <pre class="prettyprint">
     namespace MyApp;
@@ -293,10 +293,14 @@
         }
     }
 
-    (new \Proem\Proem)->attachEventListener('proem.pre.in.route', function($e) {
-        return (new \Proem\Service\Asset\Generic)->set('MyApp\Router', function() use ($e) {
-            return new MyApp\Router($e->getServiceManager()->get('request')->getBaseUri());
-        });
+    $proem->attachEventListener('proem.pre.in.route', function($event) {
+        $asset = new \Proem\Service\Asset\Generic;
+        $event->setParam('router.asset', $asset->set('MyApp\Router', function() use ($event) {
+            return new MyApp\Router(
+                $event->getServiceManager()->get('request')->getBaseUri()
+            );
+        }));
+        return $event;
     })->init();
   </pre>
 </div>

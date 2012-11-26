@@ -146,5 +146,47 @@
     Attaching your own listener to the <em>proem.route.exhausted</em> event this page can easily be customised to your requirements.
   </p>
 </div>
+<div class="well">
+  <h3>Overloading the Dispatcher</h3>
+  <p>
+    The dispatcher is setup within the {{ docLink('filter', 'Dispatch Filter') }}. You can overload the dispatch object with your own by listening for the
+    'proem.pre.in.dispatch' event. Once recieved you can reply to this event by setting the 'dispatch.asset' parameter to your dispatch object (which must implement
+    the {{ apiLink('Proem.Dispatch.Template') }} interface) wrapped within a {{ docLink('di', 'DI Container') }}.
+  </p>
+  <pre class="prettyprint">
+    $proem
+        ->attachEventListener('proem.pre.in.dispatch', function($event) {
+            $asset = new \Proem\Service\Asset\Standard;
+            $asset->set('MyApp\Dispatch', function() {
+                return new MyApp\Dispatch;
+            );
+
+            $event->setParam('dispatch.asset', $asset);
+            return $event;
+        });
+    });
+  </pre>
+</div>
+<div class="well">
+  <h3>Overloading the Dispatch Stage</h3>
+  <p>
+    The dispatcher is setup within the {{ docLink('filter', 'Dispatch Filter') }}. You can overload the dispatch object with your own by listening for the
+    'proem.pre.in.dispatch' event. Once recieved you can reply to this event by setting the 'dispatch.asset' parameter to your dispatch object (which must implement
+    the {{ apiLink('Proem.Dispatch.Template') }} interface) wrapped within a {{ docLink('di', 'DI Container') }}.
+  </p>
+  <pre class="prettyprint">
+    $proem
+        ->attachEventListener('proem.pre.in.dispatch', function($event) {
+            $asset = new \Proem\Service\Asset\Standard;
+            $asset->set('MyApp\DispatchStage', function($a) {
+                return new MyApp\DispatchStage($a->getParam('assets'));
+            );
+
+            $event->setParam('dispatch.asset', $asset);
+            return $event;
+        });
+    });
+  </pre>
+</div>
 {{ disqus('/docs/dev/dispatch-component') }}
 {% endblock %}

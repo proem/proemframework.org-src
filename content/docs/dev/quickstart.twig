@@ -34,11 +34,18 @@
     curl -s https://getcomposer.org/installer | php
   </code>
   <p>
-    Now, finally, install the latest stable version of Proem.
+    Create a <em>composer.json</em> file with the following content:
+  </P>
+  <pre class="prettyprint">
+    {
+      require: {
+        "proem/proem": "0.7.0"
+      }
+    }
+  </pre>
+  <p>
+    Now, install using composer: <code>composer.phar install</code>
   </p>
-  <code>
-    php composer.phar create-project proem/proem proem dev-develop
-  </code>
 </div>
 <div class="well">
   <h3>Basic Directory Structure</h3>
@@ -82,9 +89,9 @@
   <pre class="prettyprint">
     &lt;?php
 
-    require_once '../proem/lib/Proem/Autoloader.php';
+    require_once '../vendor/proem/proem/lib/Proem/Util/Autoloader.php';
 
-    (new Proem\Autoloader())
+    (new Proem\Util\Autoloader())
         ->attachNamespace('Module', '../lib')
         ->register();
 
@@ -100,7 +107,7 @@
     cd htdocs && php -S 127.0.0.1:8080 index.php
   </code>
   <p>
-  Now, if you open your browser and go to <a target="_blank" href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> you should see:
+    Now, if you open your browser and go to <a target="_blank" href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> you should see:
   </p>
   <pre>
     Hello World!
@@ -180,7 +187,7 @@
 </div>
 <div class="well">
   <p>
-  That concludes the QuickStart guide for now. For more reading take a look at {{ docLink('bootstrap') }} and then read on for more detail about
+    That concludes the QuickStart guide for now. For more reading take a look at {{ docLink('bootstrap') }} and then read on for more detail about
     individual components.
   </p>
 </div>

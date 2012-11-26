@@ -171,7 +171,11 @@ class ProemExtension extends ExtensionBase
             $context = $this->docContext();
         }
 
-        return "<a href=\"/api/{$context}/namespaces/{$class}.html\">{$title}</a>";
+        if ($class == 'Proem') {
+            return "<a href=\"/api/{$context}/namespaces/{$class}.html\">{$title}</a>";
+        } else {
+            return "<a href=\"/api/{$context}/classes/{$class}.html\">{$title}</a>";
+        }
     }
 
     public function disqus($id)
