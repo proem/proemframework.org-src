@@ -1,5 +1,5 @@
-layout: docs/current.twig
----
+{% extends "docs_layout.twig" %}
+{% block content %}
 <div class="well">
   <h3>The QuickStart Guide</h3>
   <p>
@@ -11,14 +11,14 @@ layout: docs/current.twig
     The aim here is simply to get an example up and running, so that you can see the basics of how things work, and as you read further documentation you can play with things.
   </p>
   <div class="alert alert-info">
-    It is highly recommended to follow along with this section of the docs. We build a simple app here that is later built upon within the <a href="/docs/current/modules.html">Modules</a> and
-    <a href="/docs/current/plugins.html">Plugins</a> sections.
+    It is highly recommended to follow along with this section of the docs. We build a simple app here that is later built upon within the {{ docLink('modules') }} and
+    {{ docLink('plugins') }} sections.
   </div>
 </div>
 <div class="well">
   <h3>Install Proem</h3>
   <p>
-    A complete guide to the installation process can be found <a href="/docs/current/installation.html">here</a>. In this guide, we are going to choose a simple route, and install using 
+    A complete guide to the installation process can be found {{ docLink('installation', 'here') }}. In this guide, we are going to choose a simple route, and install using
     <a href="http://getcomposer.org">composer</a>.
   <p>
   <p>
@@ -34,16 +34,23 @@ layout: docs/current.twig
     curl -s https://getcomposer.org/installer | php
   </code>
   <p>
-    Now, finally, install the latest stable version of Proem.
+    Create a <em>composer.json</em> file with the following content:
+  </P>
+  <pre class="prettyprint">
+    {
+      require: {
+        "proem/proem": "0.7.0"
+      }
+    }
+  </pre>
+  <p>
+    Now, install using composer: <code>composer.phar install</code>
   </p>
-  <code>
-    php composer.phar create-project proem/proem
-  </code>
 </div>
 <div class="well">
   <h3>Basic Directory Structure</h3>
   <p>
-    There is no forced directory structure in Proem as even your controller namespaces can be <a href="/docs/current/dispatch.html#controller-namespaces">configured</a>. In this example however, we are
+    There is no forced directory structure in Proem as even your controller namespaces can be {{ docLink('dispatch', 'configured', 'mapping-controllers') }}. In this example however, we are
     going to stick to the defaults. Let's create the directory structure to support this.
   </p>
   <code>
@@ -82,9 +89,9 @@ layout: docs/current.twig
   <pre class="prettyprint">
     &lt;?php
 
-    require_once '../proem/lib/Proem/Autoloader.php';
+    require_once '../vendor/proem/proem/lib/Proem/Util/Autoloader.php';
 
-    (new Proem\Autoloader())
+    (new Proem\Util\Autoloader())
         ->attachNamespace('Module', '../lib')
         ->register();
 
@@ -100,7 +107,7 @@ layout: docs/current.twig
     cd htdocs && php -S 127.0.0.1:8080 index.php
   </code>
   <p>
-  Now, if you open your browser and go to <a target="_blank" href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> you should see:
+    Now, if you open your browser and go to <a target="_blank" href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> you should see:
   </p>
   <pre>
     Hello World!
@@ -180,18 +187,9 @@ layout: docs/current.twig
 </div>
 <div class="well">
   <p>
-    That concludes the QuickStart guide for now. For more reading take a look at <a href="/docs/current/bootstrap.html">The Bootstrap Process</a> and then read on for more detail about
+    That concludes the QuickStart guide for now. For more reading take a look at {{ docLink('bootstrap') }} and then read on for more detail about
     individual components.
   </p>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/docs/current/quickstart';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+{{ disqus('/docs/dev/quickstart') }}
+{% endblock %}

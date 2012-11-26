@@ -1,25 +1,48 @@
-layout: docs/current.twig
----
+{% extends 'docs_layout.twig' %}
+{% block content %}
 <div class="well">
   <h3>The Dispatch Component</h3>
   <p>
     While the Dispatch component is probably one of the simplest components within Proem, it also sits at the very heart of the framework. This is the component responsible for taking a
-    <em>Route Payload</em> and checking to see if it is able to actually execute it. There is actually very little that requires configuration within the Dispatch component. By default, it
-    will receive a <em>Payload</em>, try and instantiate the appropriate object and then call the appropriate method on this object.
-  </p>
-  <p>
-    By default the dispatcher looks for Controllers within a namespace defined using the pattern <em>Module\:module\Controller\:controller</em> where the tokens <em>:module</em> and <em>:controller</em> are
-    replaced with the module and controller contained within the <em>Payload</em>.
+    <em>Route Payload</em> and checking to see if it is able to actually execute it. There is actually very little that requires configuration within the Dispatch component, however it
+    does expose what it can. By default, it will receive a <em>Payload</em>, try and instantiate the appropriate object and then call the appropriate method on this object.
   </p>
 </div>
 <div class="well">
-  <a name="#controller-namespaces"></a>
-  <h3>Adding a new Controller namespace.</h3>
+  <a name="#mapping-controllers"></a>
+  <h3>Mapping your controller's namepspace.</h3>
   <p>
-    This pattern is known as a controllerMap, and is actually one area that can be configured. To do so, simply add a new controllerMap to the Dispatch object. For example:
+    Within the standard dispatch object a <em>controllerMap</em> pattern is defined to help map a call to a controller to it's namespace.
+  </p>
+  <p>
+    By default the dispatcher looks for Controllers within a namespace defined using the pattern <em>Module\{:module}\Controller\{:controller}</em> where the tokens <em>{:module}</em> and
+    <em>{:controller}</em> are replaced with the module and controller return from the <em>Payload</em>.
+  </p>
+  <p>
+    You can add your own controller mapping to the dispatch object:
   </p>
   <pre class="prettyprint">
-    $dispatcher->attachControllerMap('Modules\:module\:controllerController');
+    $dispatcher->attachControllerMap('Modules\{:module}\{:controller}Controller');
+  </pre>
+  <p>
+    By default comntroller maps are iterated through in a FIFO fasion, meaning that any new controller maps added to the system wil actually be searched after the default
+    controller map. You can however, add a priority as a second argument to attachControllerMap(), allowing maps to be prioritised.
+  </p>
+  <pre class="prettyprint">
+    $dispatcher->attachControllerMap('Modules\{:module}\{:controller}Controller', 10);
+  </pre>
+  <p>
+    This new controller map would now now be searched prior to the default map which default to a priority of 0.
+  </p>
+</div>
+<div class="well">
+  <h3>Change *action* method signatures.</h3>
+  <p>
+    Just as <em>controllerMaps</em> can map a controllers namespace, you can also change the signature of an action method. By default, action methods are named using the pattern {:action}Action
+    where the token {:action} as replaced by the action data returning from the payload. You can change this by using:
+  </p>
+  <pre class="prettyprint">
+    $dispatcher->setActionMap('{:action}Whatever');
   </pre>
 </div>
 <div class="well">
@@ -123,14 +146,47 @@ layout: docs/current.twig
     Attaching your own listener to the <em>proem.route.exhausted</em> event this page can easily be customised to your requirements.
   </p>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/docs/current/dispatch';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<div class="well">
+  <h3>Overloading the Dispatcher</h3>
+  <p>
+    The dispatcher is setup within the {{ docLink('filter', 'Dispatch Filter') }}. You can overload the dispatch object with your own by listening for the
+    'proem.pre.in.dispatch' event. Once recieved you can reply to this event by setting the 'dispatch.asset' parameter to your dispatch object (which must implement
+    the {{ apiLink('Proem.Dispatch.Template') }} interface) wrapped within a {{ docLink('di', 'DI Container') }}.
+  </p>
+  <pre class="prettyprint">
+    $proem
+        ->attachEventListener('proem.pre.in.dispatch', function($event) {
+            $asset = new \Proem\Service\Asset\Standard;
+            $asset->set('MyApp\Dispatch', function() {
+                return new MyApp\Dispatch;
+            );
+
+            $event->setParam('dispatch.asset', $asset);
+            return $event;
+        });
+    });
+  </pre>
+</div>
+<div class="well">
+  <h3>Overloading the Dispatch Stage</h3>
+  <p>
+    The dispatcher is setup within the {{ docLink('filter', 'Dispatch Filter') }}. You can overload the dispatch object with your own by listening for the
+    'proem.pre.in.dispatch' event. Once recieved you can reply to this event by setting the 'dispatch.asset' parameter to your dispatch object (which must implement
+    the {{ apiLink('Proem.Dispatch.Template') }} interface) wrapped within a {{ docLink('di', 'DI Container') }}.
+  </p>
+  <pre class="prettyprint">
+    $proem
+        ->attachEventListener('proem.pre.in.dispatch', function($event) {
+            $asset = new \Proem\Service\Asset\Standard;
+            $asset->set('MyApp\DispatchStage', function($a) {
+                return new MyApp\DispatchStage($a->getParam('assets'));
+            );
+
+            $event->setParam('dispatch.asset', $asset);
+            return $event;
+        });
+    });
+  </pre>
+</div>
+{{ disqus('/docs/dev/dispatch-component') }}
+{% endblock %}

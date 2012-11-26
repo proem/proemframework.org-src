@@ -1,11 +1,10 @@
-{% extends "docs_layout.twig" %}
+{% extends 'docs_layout.twig' %}
 {% block content %}
 <div class="well">
   <h2>The Autoloader</h2>
   <p>
     The autoloader is a simple class loader which adheres to the recently defined PSR-0 standard
-    (see <a href="http://groups.google.com/group/php-standards">here</a> and
-    <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md">here</a>).
+    (see <a href="http://groups.google.com/group/php-standards">here</a> and <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md">here</a>).
   </p>
   <p>
     Whenever you attempt to use a class which has not yet been included PHP will trigger a mechanism
@@ -26,24 +25,33 @@
 <div class="well">
   <h3>A simple example</h3>
   <pre class="prettyprint">
-    require_once './lib/Proem/Autoloader.php';
+    require_once './lib/Proem/Util/Autoloader.php';
 
-    (new \Proem\AutoLoader)
+    (new \Proem\Util\AutoLoader)
         ->register();
   </pre>
   <div class="alert alert-info">
-    Note that you first must manually include the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Autoloader.php">Autoloader.php</a> file itself. Once this is done, you will
-    no longer need any calls to include or require within your code and Proem is included by default. See <a href="https://github.com/proem/proem/issues/124">here</a>.
+    Note that you first must manually include the {{ hubLink('Proem.Util.Autoloader') }} file itself. Once this is done, you will no longer need any calls to include or require within your
+    code and Proem is included by default.
   </div>
 </div>
 <div class="well">
   <h3>Attaching namespaces</h3>
-  <p>The Proem autloader expects namespaces mapped to the paths these can be found in:</p>
+  <p>The Proem autloader expects namespaces mapped to the paths these namespaces can be found within (or more commonly, there parent directory):</p>
   <pre class="prettyprint">
-    (new \Proem\AutoLoader)
+    (new \Proem\Util\AutoLoader)
         ->attachNamespace([
             'Foo' => '/myfoo'
-        ]);
+    ]);
+  </pre>
+  <div class="alert alert-info">
+    As of {{ commitLink('f3d110d') }} the following will also now work.
+  </div>
+  <pre class="prettyprint">
+    (new \Proem\Util\AutoLoader)
+        ->attachNamespace([
+            'Foo' => '/myfoo/Foo'
+    ]);
   </pre>
 </div>
 <div class="well">
@@ -103,15 +111,5 @@
     $autoloader->unregister();
   </pre>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/docs/autoloader';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+{{ disqus('/docs/autoloader') }}
 {% endblock %}

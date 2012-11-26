@@ -1,13 +1,11 @@
-layout: docs/current.twig
----
+{% extends 'docs_layout.twig' %}
+{% block content %}
 <div class="well">
   <h2>The routing component</h2>
   <p>
-    Routing is the process of parsing a url and mapping the resultant tokens to modules, controllers, actions and further
-    parameters. At it's simplest, the <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Routing/Route/Standard.php">standard route</a>
-    provided by Proem will map a url such as /foo/bar/boo/id/12 to the <em>Foo</em> module, <em>Bar</em> controller (class), <em>Boo</em> action
-    (method) and pass it the number <em>12</em> as the parameter <em>id</em>. More complex configurations can be achieved and we can even remap
-    url's to modules, controllers and actions that are not necessarily obvious from looking at the url.
+    Routing is the process of parsing a url and mapping the resultant tokens to modules, controllers, actions and further parameters. At it's simplest, the {{ hubLink('Proem.Routing.Route.Standard') }}
+    object provided by Proem will map a url such as /foo/bar/boo/id/12 to the <em>Foo</em> module, <em>Bar</em> controller (class), <em>Boo</em> action (method) and pass it the number <em>12</em> as the
+    parameter <em>id</em>. More complex configurations can be achieved and we can even remap url's to modules, controllers and actions that are not necessarily obvious from looking at the url.
   </p>
 </div>
 <div class="well">
@@ -23,7 +21,7 @@ layout: docs/current.twig
   <p>
     The <em>:module</em>, <em>:controller</em>, <em>:action</em> and <em>:params</em> tokens are internally replaced by more complex regular expressions. When <em>process()</em>
     is called the rule is tested against the $url argument. By default, if the entire url matches this series of regular expressions the matching data is stored within a
-    <a href="https://github.com/proem/proem/blob/develop/lib/Proem/Dispatch/Payload.php">Dispatch\Payload</a> object, the <em>populated</em> flag is set on it and this <em>Payload</em>
+    {{ hubLink('Proem.Dispatch.Payload') }} object, the <em>populated</em> flag is set on it and this <em>Payload</em>
     is then returned from the <em>Route</em> object's <em>process()</em> method. From the <em>Payload</em> this matching data can be referenced by the corresponding names
     module, controller, action and params. These names have special meaning within the <em>Standard Route</em> and are defined as simple yet very common defaults.
   </p>
@@ -153,8 +151,8 @@ layout: docs/current.twig
   <p>
     The above examples demonstrate how to configure simple rules, but web applications these days are complex beasts with multiple
     url's all pointing to multiple resources. How do we handle all this in a simple uniformed manner? Easy, this is where the
-    <a href="(https://github.com/proem/proem/blob/develop/lib/Proem/Routing/Router.php">Router</a> comes into play. The <em>Router</em>
-    is basically responsible for storing a series of <em>Routes</em> and managing the execution of there <em>process()</em> method's against the supplied url.
+    {{ hubLink('Proem.Routing.Router') }} comes into play. The <em>Router</em> is basically responsible for storing a series of <em>Routes</em>
+    and managing the execution of there <em>process()</em> method's against the supplied url.
   </p>
   <p>
     This allows us to chain together and build up more complex and flexible Routing rules.
@@ -216,7 +214,7 @@ layout: docs/current.twig
     </p>
 </div>
 <div class="well">
-  <a name="exec-callback"></a>
+  {{ anchor('exec-callback') }}
   <h3>Configuring Routes to execute a Callback</h3>
   <p>
     While having a Route match a url, create a Payload and then eventually have that Payload Dispatched off to execute userland code within modules and controllers is great, sometimes
@@ -266,14 +264,5 @@ layout: docs/current.twig
     </p>
   </div>
 </div>
-<div class="well" id="disqus_thread"></div>
-<script type="text/javascript">
-  var disqus_identifier = '/docs/current/route-component';
-  (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+{{ disqus('/docs/dev/route-component') }}
+{% endblock %}
