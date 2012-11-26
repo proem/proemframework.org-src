@@ -1,0 +1,36 @@
+{% extends "page_layout.twig" %}
+{% block content %}
+<div class="well">
+  <h3>0.7.0 Released.</h3>
+  <p>
+    I have just bundled and pushed a pretty lame 0.7.0 release to github. Why so lame? Well, this release was mostly pushed to get the *current* docs
+    to line up with the *dev* docs. So, more of a documentation up than anything else. This finally sees the site move to <a href="https://github.com/trq/Gen">Gen</a>
+    for generation, the source is available <a href="https://github.com/proem/proemframework.org-src">here</a>.
+  </p>
+  <p>
+    Having said that however, there is a lot of work in this release. It just doesn't really close any of the outstanding issues in the 0.7.0 milestone. These will
+    likely be moved into a 0.8.0 or maybe in fact a 0.10.0 release. See the <a href="https://github.com/proem/proem/compare/0.6.5...0.7.0">Changelog</a>
+  </p>
+  <h4>Moving forward &mdash; 0.10.0</h4>
+  <p>
+    The next version may indeed skip a few beats. Why? Some major refactoring.
+  </p>
+  <p>
+    For a while now there have been a few fairly major niggles eating away with me. These things need to be fixed before the framework can really start to move forward. These include
+    but are not really limited to:
+  </p>
+  <ul>
+    <li>Directory structure. - <em>The current structure and naming convention is terrible.</em></li>
+    <li>The test suite - <em>Needs a serious overhaul</em></li>
+    <li>IO - <em>I've been thinking for  along while now that this could use the Symfony\HttpFoundation component.</em></li>
+    <li>The Bootstrap Filter Chain - <em>Currently a lot more complex than it needs to be. This is somewhat of a performance bottleneck.</em></li>
+  </ul>
+  <p>
+    None of these are small tasks, and in some cases, things will be completely rewritten.
+  </p>
+  <p>
+    Anyway, for now, I'm just glad to see some movement in the repos.
+  </p>
+</div>
+{{ disqus('/blog/27-11-2012/0.7.0-released') }}
+{% endblock %}
