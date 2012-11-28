@@ -9,20 +9,26 @@ task('build', 'gen', 'api', 'downloads');
 
 desc('Make sure downloads are in place.');
 task('downloads', function($args) use ($conf) {
-    $dest = __DIR__ . '/build';
+    $dest = '';
     if (isset($conf['dest'])) {
         $dest = $conf['dest'];
     }
     if (isset($args['dest'])) {
         $dest = $args['dest'];
     }
+    if (!is_dir($dest)) {
+        die("$dest not found, unable to locate proem.phar\n");
+    }
 
-    $src = '~/src/proem';
+    $src = '';
     if (isset($conf['src'])) {
         $src = $conf['src'];
     }
     if (isset($args['src'])) {
         $src = $args['src'];
+    }
+    if (!is_dir($src)) {
+        die("$src not found, unable to locate proem.phar\n");
     }
 
     system("cd $src && ./vendor/bin/phake dev:build");
@@ -31,13 +37,33 @@ task('downloads', function($args) use ($conf) {
 
 desc('Generate website');
 task('gen', function($args) use ($conf) {
-    $dest = __DIR__ . '/build';
+    $dest = '';
     if (isset($conf['dest'])) {
         $dest = $conf['dest'];
     }
     if (isset($args['dest'])) {
         $dest = $args['dest'];
     }
+    if (!is_dir($dest)) {
+        die("$dest not found, unable to build documentation\n");
+    }
+
+    $src = '';
+    if (isset($conf['src'])) {
+        $src = $conf['src'];
+    }
+    if (isset($args['src'])) {
+        $src = $args['src'];
+    }
+    if (!is_dir($src)) {
+        die("$src not found, unable to build documentation\n");
+    }
+
+    system('mkdir -p content/docs/{current,dev}');
+    system('cd ' . $src . ' && git checkout master');
+    system('cp -R ' . $src . '/doc/* content/docs/current/');
+    system('cd ' . $src . ' && git checkout develop');
+    system('cp -R ' . $src . '/doc/* content/docs/dev/');
 
     require realpath(__DIR__) . '/vendor/autoload.php';
 
@@ -70,6 +96,9 @@ task('serve', 'build', function($args) use ($conf) {
     if (isset($args['dest'])) {
         $dest = $args['dest'];
     }
+    if (!is_dir($dest)) {
+        die("$dest not found, unable to serve site\n");
+    }
 
     if (is_dir($dest)) {
         echo "\nhttp://{$host}:{$port}\n";
@@ -80,28 +109,37 @@ task('serve', 'build', function($args) use ($conf) {
 
 desc('Build api docs');
 task('api', 'gen', function($args) use ($conf) {
-    $dest = __DIR__ . '/build';
+    $dest = '';
     if (isset($conf['dest'])) {
         $dest = $conf['dest'];
     }
     if (isset($args['dest'])) {
         $dest = $args['dest'];
     }
+    if (!is_dir($dest)) {
+        die("$dest not found, unable to build api documentation\n");
+    }
 
-    $src = '~/src/proem';
+    $src = '';
     if (isset($conf['src'])) {
         $src = $conf['src'];
     }
     if (isset($args['src'])) {
         $src = $args['src'];
     }
+    if (!is_dir($src)) {
+        die("$src not found, unable to build api documentation\n");
+    }
 
-    $phpdoc = '/usr/local/bin/phpdoc';
+    $phpdoc = '';
     if (isset($conf['phpdoc'])) {
         $phpdoc = $conf['phpdoc'];
     }
     if (isset($args['phpdoc'])) {
         $phpdoc = $args['phpdoc'];
+    }
+    if (!file_exists($phpdoc)) {
+        die("$phpdoc not found, unable to build api documentation\n");
     }
 
     system('mkdir -p ' . $dest . '/api/{current,dev}');

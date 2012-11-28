@@ -2,3 +2,4 @@ vendor
 composer.lock
 build
 config.php
+content/docs/*
