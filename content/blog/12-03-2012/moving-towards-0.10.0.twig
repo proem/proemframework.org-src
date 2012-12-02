@@ -1,0 +1,29 @@
+{% extends "page_layout.twig" %}
+{% block content %}
+<div class="well">
+  <h3>Moving towards 0.10.0</h3>
+  <p>
+    Recently I announced the release of <a href="/blog/11-27-2012/0.7.0-released.html">0.7.0</a>. In these release notes I hinted at the fact that there may be a large gap in between
+    0.7.0 and the next release (0.10.0). Today, I am here to announce that this is indeed the case.
+  </p>
+  <h5>Why the gap?</h5>
+  <p>
+    A large gap like this is generally used to indicate that a lot of work has been done. In this case, we have a lot of work planned. As such, by the time 0.10.0 is released, the framework
+    wont likely look like it does now.
+  </p>
+  <h5>Why such a large re factor?</h5>
+  <p>
+    There are certain areas of Proem I haven't been happy with for quite some time. Some are over engineered, others have been neglected, while others are just poorly designed and need to be
+    fixed. Rest assured, <strong>0.10.0 is going to fix a lot of issues</strong> and make the framework better.
+  </p>
+  <h5>We may drop some history.</h5>
+  <p>
+    This re factor is indeed such a large change that big chunks of the current framework are being moved or removed and rewritten. In doing so we may drop some history of changes, but really
+    once 0.10.0 is released, you wont need to know about anything prior.
+  </p>
+  <p>
+    I am not expecting this re factoring to take a considerable amount of time. I am hoping to get this release complete and packaged by late February. Though as always, I'm not promising anything.
+  </p>
+</div>
+{{ disqus('/blog/03-12-2012/moving-towards-0.10.0') }}
+{% endblock %}
